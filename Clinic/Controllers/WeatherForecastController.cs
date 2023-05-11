@@ -36,9 +36,5 @@ namespace Clinic.Controllers
             .ToArray();
         }
 
-        public IActionResult sign()
-        {
-            return Ok();
-        }
     }
 }
