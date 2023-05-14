@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 #nullable disable
 
-namespace Clinic.Models
+namespace Clinic_DbModel.Models
 {
     public partial class clinic_dbContext : DbContext
     {

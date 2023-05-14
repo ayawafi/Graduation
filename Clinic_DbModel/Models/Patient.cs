@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 #nullable disable
 
-namespace Clinic.Models
+namespace Clinic_DbModel.Models
 {
     public partial class Patient
     {

@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-#nullable disable
-
-namespace Clinic.Models
+namespace Clinic_ModelView
 {
-    public partial class Socialmediaurl
+    public class SocialMediaUrlModelView
     {
         public int Id { get; set; }
         public int DoctorId { get; set; }
@@ -14,7 +15,5 @@ namespace Clinic.Models
         public string InstagramUrl { get; set; }
         public string LinkedInUrl { get; set; }
         public string WebsiteUrl { get; set; }
-
-        public virtual Doctor Doctor { get; set; }
     }
 }

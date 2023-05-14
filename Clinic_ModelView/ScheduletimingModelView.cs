@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-#nullable disable
-
-namespace Clinic.Models
+namespace Clinic_ModelView
 {
-    public partial class Scheduletiming
+    public class ScheduletimingModelView
     {
         public int Id { get; set; }
-        public int DoctorId { get; set; }
         public int TimeDuration { get; set; }
         public string Day { get; set; }
+        [Timestamp]
         public DateTime? Time { get; set; }
-
-        public virtual Doctor Doctor { get; set; }
     }
 }

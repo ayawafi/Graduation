@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="12.0.1" />
+		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+		<PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Clinic_Common\Clinic_Common.csproj" />
+	  <ProjectReference Include="..\Clinic_DbModel\Clinic_DbModel.csproj" />
+	  <ProjectReference Include="..\Clinic_ModelView\Clinic_ModelView.csproj" />
+	</ItemGroup>
+</Project>
