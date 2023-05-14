@@ -29,6 +29,15 @@ namespace Clinic.Controllers
             return Ok(res);
         }
 
-        
+        [Route("api/doctor/GetAllPatients")]
+        [HttpGet]
+        public IActionResult GetAllPatients()
+        {
+            var result = _doctorManager.GetAllPatients();
+            return Ok(result);
+
+        }
+
+
     }
 }
