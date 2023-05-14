@@ -63,12 +63,12 @@ namespace Clinic_Core.Managers.Services
             return result;
         }
 
-        public List<Specialization> GetAllSpecialties()
-        {
-            var result = new List<Specialization>();
+        //public List<Specialization> GetAllSpecialties()
+        //{
+        //    var result = new List<Specialization>();
 
-            return result;
-        }
+        //    return result;
+        //}
         #endregion Public 
 
         #region private

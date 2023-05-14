@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Clinic_DbModel.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,6 @@ namespace Clinic_Core.Managers.Interfaces
 {
     public interface ISpecializationManager
     {
+        List<Specialization> GetAllSpecialties();
     }
 }
