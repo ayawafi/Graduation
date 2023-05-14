@@ -62,6 +62,13 @@ namespace Clinic_Core.Managers.Services
             var result = _mapper.Map<LoginDoctorResponse>(doctor);
             return result;
         }
+
+        public List<Specialization> GetAllSpecialties()
+        {
+            var result = new List<Specialization>();
+
+            return result;
+        }
         #endregion Public 
 
         #region private

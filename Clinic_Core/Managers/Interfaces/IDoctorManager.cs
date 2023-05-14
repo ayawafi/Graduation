@@ -1,4 +1,5 @@
-﻿using Clinic_ModelView;
+﻿using Clinic_DbModel.Models;
+using Clinic_ModelView;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +12,6 @@ namespace clinic_Core.Managers.Interfaces
     {
         LoginDoctorResponse SignUp(DoctorRegistrationModelView DoctorReg);
         LoginDoctorResponse SignIn(PatientLoginModelView DoctorLogin);
+        List<Specialization> GetAllSpecialties();
     }
 }
