@@ -1,7 +1,7 @@
-﻿using clinic_Core.Managers.Interfaces;
-using Clinic_Core.Managers.Interfaces;
-using Clinic_Core.Managers.Services;
+﻿using Clinic_Core.Managers.Interfaces;
+using Clinic_ModelView;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace Clinic.Controllers
 {
@@ -9,8 +9,11 @@ namespace Clinic.Controllers
     public class SpecializationController : ControllerBase
     {
         private ISpecializationManager _specializationManager;
-        public SpecializationController(ISpecializationManager specializationManager)
+        private readonly ILogger<SpecializationController> _logger;
+        public SpecializationController(ILogger<SpecializationController> logger,
+                              ISpecializationManager specializationManager)
         {
+            _logger = logger;
             _specializationManager = specializationManager;
         }
 
@@ -22,8 +25,35 @@ namespace Clinic.Controllers
             return Ok(result);
 
         }
+        
+        [Route("api/specialties/CreateSpecialty")]
+        [HttpPost]
+         public IActionResult CreateSpecialty([FromBody] SpectalizationModelView specialtyMV)
+        {
+            var result = _specializationManager.CreateSpecialty(specialtyMV);
+            return Ok(result);
+        }
 
+        
+        [Route("api/specialties/UpdateSpecialty/{id}")]
+        [HttpPut]
+        public IActionResult UpdateSpecialty([FromBody] SpectalizationModelView currentSpecialty)
+        {
+            var result = _specializationManager.UpdateSpecialty(currentSpecialty);
+            return Ok(result);
+        }
 
+        [Route("api/specialties/DeleteSpecialty/{id}")]
+        [HttpDelete]
+        public IActionResult DeleteSpecialty(SpectalizationModelView specialtyMV)
+        {
+            var result = _specializationManager.DeleteSpecialty(specialtyMV);
+            return Ok(result);
 
+        }
     }
+
+
+
 }
+
