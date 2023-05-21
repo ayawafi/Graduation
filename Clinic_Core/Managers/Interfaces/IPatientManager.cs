@@ -9,7 +9,7 @@ namespace Clinic_Core.Managers.Interfaces
 {
     public interface IPatientManager
     {
-        LoginPatientResponse SignUp(PatientRegistrationModelView PatientReg);
+        Task<LoginPatientResponse> SignUp(PatientRegistrationModelView PatientReg);
         //LoginPatientResponse SignIn(PatientLoginModelView PatientLogin);
     }
 }

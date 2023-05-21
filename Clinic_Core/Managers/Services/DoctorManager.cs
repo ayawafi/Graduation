@@ -71,8 +71,6 @@ namespace Clinic_Core.Managers.Services
 
 
                 _dbContext.SaveChanges();
-                //var result = _mapper.Map<LoginDoctorResponse>(doctor);
-
                 var jwtSecurityToken = await CreateJwtToken(doctor);
 
                 return new LoginPatientResponse

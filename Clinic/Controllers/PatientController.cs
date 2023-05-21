@@ -3,10 +3,11 @@ using Clinic_ModelView;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace Clinic.Controllers
 {
-    [Authorize]
+    
     [ApiController]
     public class PatientController : ControllerBase
     {
@@ -17,9 +18,9 @@ namespace Clinic.Controllers
         }
         [Route("api/patient/SignUp")]
         [HttpPost]
-        public IActionResult SignUp(PatientRegistrationModelView patientReg)
+        public async Task<IActionResult> SignUp(PatientRegistrationModelView patientReg)
         {
-            var res = _patientManager.SignUp(patientReg);
+            var res = await _patientManager.SignUp(patientReg);
             return Ok(res);
         }
 
@@ -31,5 +32,6 @@ namespace Clinic.Controllers
         //    var res = _patientManager.SignIn(patientLogin);
         //    return Ok(res);
         //}
+
     }
 }
