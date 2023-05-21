@@ -47,7 +47,8 @@ namespace Clinic
             services.AddDbContext<clinic_dbContext>(op =>
                 op.UseMySQL(Configuration.GetConnectionString("Default"))
                 );
-            services.Configure<JWT>(Configuration.GetSection("JWT"));
+            services.AddOptions();
+            services.Configure<JWT>(Configuration.GetSection("JWTOken"));
             services.AddIdentity<ApplicationUser, IdentityRole>()
              .AddDefaultTokenProviders()
              .AddEntityFrameworkStores<clinic_dbContext>();
@@ -68,9 +69,9 @@ namespace Clinic
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = Configuration.GetValue<string>("JWT:Issuer"),
-                    ValidAudience = Configuration.GetValue<string>("JWT:Audience"),
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetValue<string>("JWT:Key")))
+                    ValidIssuer = Configuration.GetValue<string>("JWTOken:Issuer"),
+                    ValidAudience = Configuration.GetValue<string>("JWTOken:Audience"),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetValue<string>("JWTOken:Key")))
                 };
             });
          
