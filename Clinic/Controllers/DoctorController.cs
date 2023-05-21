@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Clinic.Controllers
 {
-    [Authorize]
+    
     [ApiController]
     public class DoctorController : ControllerBase
     {
