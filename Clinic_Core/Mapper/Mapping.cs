@@ -10,9 +10,8 @@ namespace Clinic_Core.Mapper
         {
             CreateMap<Appointment, AppointmentModelView>().ReverseMap();
             CreateMap<Blog, BlogModelView>().ReverseMap();
-            CreateMap<Clinic, ClinicModelView>().ReverseMap();
             CreateMap<Doctor, DoctorModelView>().ReverseMap();
-            CreateMap<Patient, PatientModelView>().ReverseMap();
+            CreateMap<ApplicationUser, PatientModelView>().ReverseMap();
             CreateMap<Review, ReviewModelView>().ReverseMap();
             CreateMap<Scheduletiming, ScheduletimingModelView>().ReverseMap();
             CreateMap<Socialmediaurl, SocialMediaUrlModelView>().ReverseMap();
@@ -20,14 +19,15 @@ namespace Clinic_Core.Mapper
 
 
 
-            CreateMap<PatientLoginModelView, Patient>().ReverseMap();
-            CreateMap<PatientRegistrationModelView, Patient>().ReverseMap();
-            CreateMap<Patient, LoginPatientResponse>().ReverseMap();
+            CreateMap<PatientLoginModelView, ApplicationUser>().ReverseMap();
+            CreateMap<PatientRegistrationModelView, ApplicationUser>().ReverseMap();
+            CreateMap<ApplicationUser, LoginPatientResponse>().ReverseMap();
 
 
-            CreateMap<PatientLoginModelView, Doctor>().ReverseMap();
-            CreateMap<DoctorRegistrationModelView, Doctor>().ReverseMap();
-            CreateMap<Doctor, LoginDoctorResponse>().ReverseMap();
+            CreateMap<PatientLoginModelView, ApplicationUser>().ReverseMap();
+            CreateMap<DoctorRegistrationModelView, ApplicationUser>().ReverseMap();
+
+            CreateMap<ApplicationUser, LoginDoctorResponse>().ReverseMap();
 
 
 

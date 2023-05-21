@@ -1,9 +1,12 @@
 ﻿using clinic_Core.Managers.Interfaces;
 using Clinic_ModelView;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Clinic.Controllers
 {
+    //[Authorize]
     [ApiController]
     public class DoctorController : ControllerBase
     {

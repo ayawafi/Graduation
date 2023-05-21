@@ -10,6 +10,6 @@ namespace Clinic_Core.Managers.Interfaces
     public interface IPatientManager
     {
         LoginPatientResponse SignUp(PatientRegistrationModelView PatientReg);
-        LoginPatientResponse SignIn(PatientLoginModelView PatientLogin);
+        //LoginPatientResponse SignIn(PatientLoginModelView PatientLogin);
     }
 }

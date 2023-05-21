@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Clinic_DbModel.Models
 {
-    public partial class Socialmediaurl
+    public  class Socialmediaurl
     {
         public int Id { get; set; }
         public int DoctorId { get; set; }

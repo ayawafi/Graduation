@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Clinic_DbModel.Models
 {
-    public partial class Scheduletiming
+    public  class Scheduletiming
     {
         public int Id { get; set; }
         public int DoctorId { get; set; }

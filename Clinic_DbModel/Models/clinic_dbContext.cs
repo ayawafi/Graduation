@@ -1,4 +1,6 @@
 ﻿using System;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -6,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Clinic_DbModel.Models
 {
-    public partial class clinic_dbContext : DbContext
+    public partial class clinic_dbContext : IdentityDbContext<ApplicationUser>
     {
         public clinic_dbContext()
         {
@@ -15,28 +17,25 @@ namespace Clinic_DbModel.Models
         public clinic_dbContext(DbContextOptions<clinic_dbContext> options)
             : base(options)
         {
+
         }
 
         public virtual DbSet<Appointment> Appointments { get; set; }
         public virtual DbSet<Blog> Blogs { get; set; }
-        public virtual DbSet<Clinic> Clinics { get; set; }
         public virtual DbSet<Doctor> Doctors { get; set; }
-        public virtual DbSet<Patient> Patients { get; set; }
         public virtual DbSet<Review> Reviews { get; set; }
         public virtual DbSet<Scheduletiming> Scheduletimings { get; set; }
         public virtual DbSet<Socialmediaurl> Socialmediaurls { get; set; }
         public virtual DbSet<Specialization> Specializations { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseMySQL("Server=localhost;port=3306;user=root;password=0000;database=clinic_db;");
-            }
-        }
-
+   
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<IdentityUserLogin<string>>().HasNoKey();
+            modelBuilder.Entity<IdentityUserRole<string>>().HasNoKey();
+            modelBuilder.Entity<IdentityUserToken<string>>().HasNoKey();
+
+
             modelBuilder.Entity<Appointment>(entity =>
             {
                 entity.ToTable("appointment");
@@ -46,7 +45,7 @@ namespace Clinic_DbModel.Models
 
                 entity.HasIndex(e => e.DoctorId, "fk_appointment_doctor_idx");
 
-                entity.HasIndex(e => e.PatientId, "fk_appointment_patient_idx");
+                entity.HasIndex(e => e.UserId, "fk_appointment_user_idx");
 
                 entity.Property(e => e.Day)
                     .IsRequired()
@@ -58,7 +57,7 @@ namespace Clinic_DbModel.Models
                     .HasColumnType("tinyint")
                     .HasDefaultValueSql("'0'");
 
-                entity.Property(e => e.PatientId).HasColumnName("Patient_Id");
+                entity.Property(e => e.UserId).HasColumnName("User_Id");
 
                 entity.HasOne(d => d.Doctor)
                     .WithMany(p => p.Appointments)
@@ -66,9 +65,9 @@ namespace Clinic_DbModel.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("fk_appointment_doctor");
 
-                entity.HasOne(d => d.Patient)
+                entity.HasOne(d => d.ApplicationUser)
                     .WithMany(p => p.Appointments)
-                    .HasForeignKey(d => d.PatientId)
+                    .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("fk_appointment_patient");
             });
@@ -101,35 +100,12 @@ namespace Clinic_DbModel.Models
                     .HasConstraintName("fk_blog_doctor");
             });
 
-            modelBuilder.Entity<Clinic>(entity =>
-            {
-                entity.ToTable("clinic");
-
-                entity.HasIndex(e => e.Id, "Id_UNIQUE")
-                    .IsUnique();
-
-                entity.HasIndex(e => e.DoctorId, "fk_clinic_doctor_idx");
-
-                entity.Property(e => e.ClinicName)
-                    .IsRequired()
-                    .HasMaxLength(45);
-
-                entity.Property(e => e.DoctorId).HasColumnName("Doctor_Id");
-
-                entity.HasOne(d => d.Doctor)
-                    .WithMany(p => p.Clinics)
-                    .HasForeignKey(d => d.DoctorId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("fk_clinic_doctor");
-            });
 
             modelBuilder.Entity<Doctor>(entity =>
             {
                 entity.ToTable("doctor");
 
-                entity.HasIndex(e => e.Email, "Email_UNIQUE")
-                    .IsUnique();
-
+               
                 entity.HasIndex(e => e.Id, "Id_UNIQUE")
                     .IsUnique();
 
@@ -137,45 +113,18 @@ namespace Clinic_DbModel.Models
 
                 entity.Property(e => e.Address).HasMaxLength(255);
 
-                entity.Property(e => e.City).HasMaxLength(255);
 
                 entity.Property(e => e.College).HasMaxLength(255);
 
-                entity.Property(e => e.ConfirmPassword)
-                    .IsRequired()
-                    .HasMaxLength(255);
-
-                entity.Property(e => e.Country).HasMaxLength(45);
-
+               
                 entity.Property(e => e.Degree).HasMaxLength(255);
 
                 entity.Property(e => e.DoctorServices).HasMaxLength(255);
 
                 entity.Property(e => e.DoctorSpecialization).HasMaxLength(255);
 
-                entity.Property(e => e.Email)
-                    .IsRequired()
-                    .HasMaxLength(255);
-
-                entity.Property(e => e.FirstName)
-                    .IsRequired()
-                    .HasMaxLength(255);
-
-                entity.Property(e => e.Gender).HasMaxLength(45);
-
-                entity.Property(e => e.LastName)
-                    .IsRequired()
-                    .HasMaxLength(255);
-
-                entity.Property(e => e.Password)
-                    .IsRequired()
-                    .HasMaxLength(255);
-
-                entity.Property(e => e.PhoneNumber).HasMaxLength(255);
-
                 entity.Property(e => e.SpecialtyId).HasColumnName("Specialty_Id");
 
-                entity.Property(e => e.Username).HasMaxLength(45);
 
                 entity.Property(e => e.YearOfCompletion).HasMaxLength(255);
 
@@ -185,38 +134,6 @@ namespace Clinic_DbModel.Models
                     .HasConstraintName("fk_doctor_specialization");
             });
 
-            modelBuilder.Entity<Patient>(entity =>
-            {
-                entity.ToTable("patient");
-
-                entity.Property(e => e.BloodGroup).HasMaxLength(255);
-
-                entity.Property(e => e.City).HasMaxLength(255);
-
-                entity.Property(e => e.ConfirmPassword)
-                    .IsRequired()
-                    .HasMaxLength(255);
-
-                entity.Property(e => e.Country).HasMaxLength(255);
-
-                entity.Property(e => e.Email)
-                    .IsRequired()
-                    .HasMaxLength(255);
-
-                entity.Property(e => e.FirstName)
-                    .IsRequired()
-                    .HasMaxLength(255);
-
-                entity.Property(e => e.LastName)
-                    .IsRequired()
-                    .HasMaxLength(255);
-
-                entity.Property(e => e.Password)
-                    .IsRequired()
-                    .HasMaxLength(255);
-
-                entity.Property(e => e.StreetAddress).HasMaxLength(255);
-            });
 
             modelBuilder.Entity<Review>(entity =>
             {
@@ -225,15 +142,15 @@ namespace Clinic_DbModel.Models
                 entity.HasIndex(e => e.Id, "Id_UNIQUE")
                     .IsUnique();
 
-                entity.HasIndex(e => e.PatientId, "fk_review_patient_idx");
+                entity.HasIndex(e => e.UserId, "fk_review_user_idx");
 
-                entity.Property(e => e.PatientId).HasColumnName("Patient_Id");
+                entity.Property(e => e.UserId).HasColumnName("User_Id");
 
-                entity.HasOne(d => d.Patient)
+                entity.HasOne(d => d.ApplicationUser)
                     .WithMany(p => p.Reviews)
-                    .HasForeignKey(d => d.PatientId)
+                    .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("fk_review_patient");
+                    .HasConstraintName("fk_review_user");
             });
 
             modelBuilder.Entity<Scheduletiming>(entity =>

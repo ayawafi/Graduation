@@ -10,5 +10,6 @@ namespace Clinic_ModelView
     {
         public int Id { get; set; }
         public string ClinicName { get; set; }
+        public string ClinicAddress { get; set; }
     }
 }

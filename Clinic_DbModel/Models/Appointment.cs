@@ -5,10 +5,10 @@ using System.Collections.Generic;
 
 namespace Clinic_DbModel.Models
 {
-    public partial class Appointment
+    public class Appointment
     {
         public int Id { get; set; }
-        public int PatientId { get; set; }
+        public string UserId { get; set; }
         public int DoctorId { get; set; }
         public DateTime Date { get; set; }
         public string Day { get; set; }
@@ -16,6 +16,6 @@ namespace Clinic_DbModel.Models
         public byte? IsDeleted { get; set; }
 
         public virtual Doctor Doctor { get; set; }
-        public virtual Patient Patient { get; set; }
+        public virtual ApplicationUser ApplicationUser { get; set; }
     }
 }

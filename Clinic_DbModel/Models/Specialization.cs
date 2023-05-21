@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Clinic_DbModel.Models
 {
-    public partial class Specialization
+    public  class Specialization
     {
         public Specialization()
         {

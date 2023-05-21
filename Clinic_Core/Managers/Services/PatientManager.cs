@@ -26,40 +26,39 @@ namespace Clinic_Core.Managers.Services
         #region Public
         public LoginPatientResponse SignUp(PatientRegistrationModelView PatientReg)
         {
-            if(_dbContext.Patients.Any(x => x.Email.Equals(PatientReg.Email, StringComparison.InvariantCultureIgnoreCase)))
+            if (_dbContext.Users.Any(x => x.Email.Equals(PatientReg.Email, StringComparison.InvariantCultureIgnoreCase)))
             {
                 throw new ServiceValidationException("Email already Exist !");
             }
 
             var hashedPassword = HashPassword(PatientReg.Password);
-            var patient = _dbContext.Patients.Add(new Patient
+            var patient = _dbContext.Users.Add(new ApplicationUser
             {
                 FirstName = PatientReg.FirstName,
                 LastName = PatientReg.LastName,
                 Email = PatientReg.Email,
-                Password = hashedPassword,
-                ConfirmPassword = hashedPassword
+                PasswordHash = hashedPassword,
             }).Entity;
 
             _dbContext.SaveChanges();
-            var result = _mapper.Map<LoginPatientResponse>(patient);    
+            var result = _mapper.Map<LoginPatientResponse>(patient);
             return result;
         }
 
-        public LoginPatientResponse SignIn(PatientLoginModelView PatientLogin)
-        {
-            var Patient = _dbContext.Patients.FirstOrDefault(x => x.Email
-                          .Equals(PatientLogin.Email,
-                          StringComparison.InvariantCultureIgnoreCase));
+        //public LoginPatientResponse SignIn(PatientLoginModelView PatientLogin)
+        //{
+        //    var Patient = _dbContext.Users.FirstOrDefault(x => x.Email
+        //                  .Equals(PatientLogin.Email,
+        //                  StringComparison.InvariantCultureIgnoreCase));
 
-            if (Patient == null || !VerifyHashPassword(PatientLogin.Password, Patient.Password))
-            {
-                throw new ServiceValidationException(300, "Invalid Email or password received");
-            }
+        //    if (Patient == null || !VerifyHashPassword(PatientLogin.Password, Patient.PasswordHash))
+        //    {
+        //        throw new ServiceValidationException(300, "Invalid Email or password received");
+        //    }
 
-            var result = _mapper.Map<LoginPatientResponse>(Patient);
-            return result;
-        }
+        //    var result = _mapper.Map<LoginPatientResponse>(Patient);
+        //    return result;
+        //}
         #endregion Public 
 
         #region private

@@ -4,11 +4,18 @@ using clinic_Core.Managers.Interfaces;
 using Clinic_Core.Managers.Interfaces;
 using Clinic_DbModel.Models;
 using Clinic_ModelView;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Clinic_Core.Helper;
+
 
 namespace Clinic_Core.Managers.Services
 {
@@ -16,45 +23,60 @@ namespace Clinic_Core.Managers.Services
     {
         private clinic_dbContext _dbContext;
         private IMapper _mapper;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly JWT _jwt;
 
-        public DoctorManager(clinic_dbContext dbContext, IMapper mapper)
+        public DoctorManager(clinic_dbContext dbContext, IMapper mapper, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IOptions<JWT> jwt)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _jwt = jwt.Value;
         }
 
         #region Public
-        public LoginDoctorResponse SignUp(DoctorRegistrationModelView DoctorReg)
+        public async Task<LoginPatientResponse> SignUp(DoctorRegistrationModelView DoctorReg)
         {
-            if (_dbContext.Doctors.Any(x => x.Email.Equals(DoctorReg.Email, StringComparison.InvariantCultureIgnoreCase)))
+            if (_dbContext.Users.Any(x => x.Email.Equals(DoctorReg.Email, StringComparison.InvariantCultureIgnoreCase)))
             {
                 throw new ServiceValidationException("Email already Exist !");
             }
 
             var hashedPassword = HashPassword(DoctorReg.Password);
-            var doctor = _dbContext.Doctors.Add(new Doctor
+            var doctor = _dbContext.Users.Add(new ApplicationUser
             {
                 FirstName = DoctorReg.FirstName,
                 LastName = DoctorReg.LastName,
                 Email = DoctorReg.Email,
-                PhoneNumber = DoctorReg.PhoneNumber,  
-                Password = hashedPassword,
-                ConfirmPassword = hashedPassword,
-                SpecialtyId = 1
+                PasswordHash = hashedPassword,
+                
             }).Entity;
 
+
             _dbContext.SaveChanges();
-            var result = _mapper.Map<LoginDoctorResponse>(doctor);
-            return result;
+            //var result = _mapper.Map<LoginDoctorResponse>(doctor);
+
+            var jwtSecurityToken = await CreateJwtToken(doctor);
+
+            return new LoginPatientResponse
+            {
+                Email = doctor.Email,
+                IsValid = true,
+                Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
+                Message = "Login Successfully"
+            };
+         
         }
 
         public LoginDoctorResponse SignIn(PatientLoginModelView DoctorLogin)
         {
-            var doctor = _dbContext.Doctors.FirstOrDefault(x => x.Email
+            var doctor = _dbContext.Users.FirstOrDefault(x => x.Email
                           .Equals(DoctorLogin.Email,
                           StringComparison.InvariantCultureIgnoreCase));
 
-            if (doctor == null || !VerifyHashPassword(DoctorLogin.Password, doctor.Password))
+            if (doctor == null || !VerifyHashPassword(DoctorLogin.Password, doctor.PasswordHash))
             {
                 throw new ServiceValidationException(300, "Invalid Email or password received");
             }
@@ -63,9 +85,9 @@ namespace Clinic_Core.Managers.Services
             return result;
         }
 
-        public List<Patient> GetAllPatients()
+        public List<ApplicationUser> GetAllPatients()
         {
-            var result = _dbContext.Patients.ToList();
+            var result = _dbContext.Users.ToList();
 
             return result;
         }
@@ -82,6 +104,83 @@ namespace Clinic_Core.Managers.Services
         private static bool VerifyHashPassword(string password, string HashedPasword)
         {
             return BCrypt.Net.BCrypt.Verify(password, HashedPasword);
+        }
+
+        private async Task<LoginPatientResponse> GetTokenAsync(PatientLoginModelView model)
+        {
+            try
+            {
+                LoginPatientResponse authModel = new();
+
+                // var user = await _userManager.FindByEmailAsync(model.usernameOrEmail);
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                var result = await _userManager.CheckPasswordAsync(user, model.Password);
+                if (user is null || !result)
+                {
+                    authModel.Message = "Email or Password is incorrect!";
+                    return authModel;
+                }
+
+                var jwtSecurityToken = await CreateJwtToken(user);
+                //var rolesList = await _userManager.GetRolesAsync(user);
+
+                authModel.IsValid = true;
+                authModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+                authModel.Email = user.Email;
+                //authModel.Roles = rolesList.ToList();
+                return authModel;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message.ToString());
+                return null;
+            }
+        }
+        private async Task<JwtSecurityToken> CreateJwtToken(ApplicationUser user)
+        {
+
+            var userClaims = await _userManager.GetClaimsAsync(user);
+            var roles = await _userManager.GetRolesAsync(user);
+            var Centerclaims = new List<Claim>
+                            {
+                            new System.Security.Claims.Claim("Email",user.Email),
+                            };
+
+            //var roleClaims = new List<Claim>();
+
+            //foreach (var role in roles)
+            //    roleClaims.Add(new Claim("roles", role));
+
+
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+                new Claim("FirstName", user.FirstName),
+                new Claim("LastName", user.LastName),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim("uid", user.Id)
+            }
+
+            .Union(userClaims)
+            //.Union(roleClaims)
+            .Union(Centerclaims);
+
+
+            var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwt.Key));
+            var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
+
+            var jwtSecurityToken = new JwtSecurityToken(
+                issuer: _jwt.Issuer,
+                audience: _jwt.Audience,
+                claims: claims,
+                expires: DateTime.Now.AddDays(_jwt.DurationInDays),
+                signingCredentials: signingCredentials);
+
+            return jwtSecurityToken;
+
+
+
         }
         #endregion private
     }

@@ -8,7 +8,7 @@ namespace Clinic_ModelView
 {
     public class LoginDoctorResponse
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         public string FirstName { get; set; }
 

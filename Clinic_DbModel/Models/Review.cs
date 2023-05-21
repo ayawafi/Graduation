@@ -5,11 +5,11 @@ using System.Collections.Generic;
 
 namespace Clinic_DbModel.Models
 {
-    public partial class Review
+    public  class Review
     {
         public int Id { get; set; }
-        public int PatientId { get; set; }
+        public string UserId { get; set; }
 
-        public virtual Patient Patient { get; set; }
+        public virtual ApplicationUser ApplicationUser { get; set; }
     }
 }

@@ -1,21 +1,28 @@
 using AutoMapper;
+using Clinic.Helper;
+using Clinic_Common.Extinsions;
 using clinic_Core.Managers.Interfaces;
 using Clinic_Core.Managers.Interfaces;
 using Clinic_Core.Managers.Services;
 using Clinic_Core.Mapper;
 using Clinic_DbModel.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Clinic
@@ -37,9 +44,37 @@ namespace Clinic
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<clinic_dbContext>(op =>
+                op.UseMySQL(Configuration.GetConnectionString("Default"))
+                );
+            services.Configure<JWT>(Configuration.GetSection("JWT"));
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+             .AddDefaultTokenProviders()
+             .AddEntityFrameworkStores<clinic_dbContext>();
 
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.RequireHttpsMetadata = false;
+                options.SaveToken = false;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = Configuration.GetValue<string>("JWT:Issuer"),
+                    ValidAudience = Configuration.GetValue<string>("JWT:Audience"),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetValue<string>("JWT:Key")))
+                };
+            });
+         
             services.AddControllers();
-            services.AddDbContext<clinic_dbContext>();
             services.AddSingleton(sp => _mapperConfiguration.CreateMapper());
             services.AddScoped<IPatientManager, PatientManager>();
             services.AddScoped<IDoctorManager, DoctorManager>();
@@ -61,14 +96,14 @@ namespace Clinic
             }
 
             app.UseHttpsRedirection();
-
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapDefaultControllerRoute();
             });
         }
     }

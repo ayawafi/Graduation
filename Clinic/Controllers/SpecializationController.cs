@@ -1,10 +1,13 @@
 ﻿using Clinic_Core.Managers.Interfaces;
 using Clinic_ModelView;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace Clinic.Controllers
 {
+    [Authorize]
     [ApiController]
     public class SpecializationController : ControllerBase
     {

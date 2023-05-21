@@ -10,8 +10,8 @@ namespace clinic_Core.Managers.Interfaces
 {
     public interface IDoctorManager
     {
-        LoginDoctorResponse SignUp(DoctorRegistrationModelView DoctorReg);
+        Task<LoginPatientResponse> SignUp(DoctorRegistrationModelView DoctorReg);
         LoginDoctorResponse SignIn(PatientLoginModelView DoctorLogin);
-        List<Patient> GetAllPatients();
+        List<ApplicationUser> GetAllPatients();
     }
 }
