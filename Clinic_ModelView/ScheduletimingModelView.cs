@@ -10,9 +10,14 @@ namespace Clinic_ModelView
     public class ScheduletimingModelView
     {
         public int Id { get; set; }
-        public int TimeDuration { get; set; }
+        public int DoctorId { get; set; }
+        public int DurationTime { get; set; }
         public string Day { get; set; }
+
         [Timestamp]
-        public DateTime? Time { get; set; }
+        public DateTime StartTime { get; set; }
+        [Timestamp]
+        public DateTime EndTime { get; set; }
+         
     }
 }

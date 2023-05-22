@@ -79,7 +79,8 @@ namespace Clinic
             services.AddSingleton(sp => _mapperConfiguration.CreateMapper());
             services.AddScoped<IPatientManager, PatientManager>();
             services.AddScoped<IDoctorManager, DoctorManager>();
-            services.AddScoped<ISpecializationManager, SpecializationManager>();
+            services.AddScoped<ISpecializationManager, SpecializationManager>(); 
+            services.AddScoped<IScheduletimingManager, ScheduletimingManager>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Clinic", Version = "v1" });

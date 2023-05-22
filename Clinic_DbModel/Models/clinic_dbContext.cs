@@ -81,7 +81,7 @@ namespace Clinic_DbModel.Models
 
                 entity.HasIndex(e => e.DoctorId, "fk_blog_doctor_idx");
 
-                entity.Property(e => e.Content).IsRequired();
+                entity.Property(e => e.Content);
 
                 entity.Property(e => e.DoctorId).HasColumnName("Doctor_Id");
 

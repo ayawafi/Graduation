@@ -28,6 +28,7 @@ namespace Clinic_Core.Mapper
             CreateMap<DoctorRegistrationModelView, ApplicationUser>().ReverseMap();
 
             CreateMap<ApplicationUser, LoginDoctorResponse>().ReverseMap();
+            CreateMap<ScheduletimingModelView, Scheduletiming>().ReverseMap();
 
 
 
