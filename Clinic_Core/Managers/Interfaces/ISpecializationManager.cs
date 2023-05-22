@@ -14,6 +14,7 @@ namespace Clinic_Core.Managers.Interfaces
         SpectalizationModelView CreateSpecialty(SpectalizationModelView specialtyMV);
         SpectalizationModelView UpdateSpecialty(SpectalizationModelView currentSpecialty);
         SpectalizationModelView DeleteSpecialty(SpectalizationModelView currentSpecialty);
+        List<Specialization> GetSpecialtiesBySpecificNum(int NumberOfSpecialties);
 
     }
 }

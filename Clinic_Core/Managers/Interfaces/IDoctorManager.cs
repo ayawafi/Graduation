@@ -13,5 +13,8 @@ namespace clinic_Core.Managers.Interfaces
         Task<LoginPatientResponse> SignUp(DoctorRegistrationModelView DoctorReg);
         Task<LoginDoctorResponse> SignIn(PatientLoginModelView DoctorLogin);
         List<ApplicationUser> GetAllPatients();
+        List<Doctor> GetTopDoctors();
+        List<Doctor> GetTopDoctorsBySpecificNumber(int Number);
+
     }
 }

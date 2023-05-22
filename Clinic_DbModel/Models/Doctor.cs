@@ -16,6 +16,7 @@ namespace Clinic_DbModel.Models
         }
 
         public int Id { get; set; }
+        public string UserId { get; set; }
         public string AboutMe { get; set; }
         public string Address { get; set; }
         public string DoctorSpecialization { get; set; }
@@ -28,6 +29,8 @@ namespace Clinic_DbModel.Models
         public string ClinicAddress { get; set; }
 
         public string Cliniclicense { get; set; }
+
+        public virtual ApplicationUser ApplicationUser { get; set; }
 
         public virtual Specialization Specialty { get; set; }
         public virtual ICollection<Appointment> Appointments { get; set; }

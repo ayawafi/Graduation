@@ -42,6 +42,22 @@ namespace Clinic.Controllers
 
         }
 
+        [Route("api/doctor/GetTopDoctors")]
+        [HttpGet]
+        public IActionResult GetTopDoctors()
+        {
+            var result = _doctorManager.GetTopDoctors();
+            return Ok(result);
+        }
+
+        [Route("api/doctor/GetTopDoctorsBySpecificNumber")]
+        [HttpGet]
+        public IActionResult GetTopDoctorsBySpecificNumber(int Number)
+        {
+            var result = _doctorManager.GetTopDoctorsBySpecificNumber(Number);
+            return Ok(result);
+        }
+
 
     }
 }

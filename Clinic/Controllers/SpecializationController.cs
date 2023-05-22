@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Clinic.Controllers
 {
-    [Authorize]
+   
     [ApiController]
     public class SpecializationController : ControllerBase
     {
@@ -28,7 +28,16 @@ namespace Clinic.Controllers
             return Ok(result);
 
         }
-        
+
+        [Route("api/specialties/GetSpecialtiesBySpecificNum")]
+        [HttpGet]
+        public IActionResult GetSpecialtiesBySpecificNum(int NumberOfSpecialties)
+        {
+            var result = _specializationManager.GetSpecialtiesBySpecificNum(NumberOfSpecialties);
+            return Ok(result);
+
+        }
+
         [Route("api/specialties/CreateSpecialty")]
         [HttpPost]
          public IActionResult CreateSpecialty([FromBody] SpectalizationModelView specialtyMV)

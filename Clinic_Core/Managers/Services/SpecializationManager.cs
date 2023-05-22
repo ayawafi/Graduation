@@ -27,6 +27,13 @@ namespace Clinic_Core.Managers.Services
             return result;
         }
 
+        public List<Specialization> GetSpecialtiesBySpecificNum(int NumberOfSpecialties)
+        {
+            var result = _dbContext.Specializations.Take(NumberOfSpecialties).ToList();
+
+            return result;
+        }
+
         public SpectalizationModelView CreateSpecialty(SpectalizationModelView specialtyMV)
         {
             if (_dbContext.Specializations

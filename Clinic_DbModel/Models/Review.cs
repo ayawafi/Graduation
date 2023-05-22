@@ -9,6 +9,10 @@ namespace Clinic_DbModel.Models
     {
         public int Id { get; set; }
         public string UserId { get; set; }
+        public int DoctorId { get; set; }
+        public string Comment { get; set; }
+        public virtual Doctor Doctors { get; set; }
+
 
         public virtual ApplicationUser ApplicationUser { get; set; }
     }

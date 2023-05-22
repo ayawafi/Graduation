@@ -16,6 +16,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Clinic_Core.Helper;
 using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
 
 namespace Clinic_Core.Managers.Services
 {
@@ -97,6 +98,20 @@ namespace Clinic_Core.Managers.Services
             var result = _mapper.Map<LoginDoctorResponse>(doctor);
             result.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
 
+            return result;
+        }
+
+        public List<Doctor> GetTopDoctors()
+        {
+            var result = _dbContext.Doctors.Include(x => x.ApplicationUser)
+                                            .Where(x => x.UserId == x.ApplicationUser.Id).ToList();
+            return result;
+        }
+
+        public List<Doctor> GetTopDoctorsBySpecificNumber(int Number)
+        {
+            var result = _dbContext.Doctors.Include(x => x.ApplicationUser)
+                                            .Where(x => x.UserId == x.ApplicationUser.Id).Take(Number).ToList();
             return result;
         }
 
