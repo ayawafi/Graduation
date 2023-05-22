@@ -21,6 +21,7 @@ namespace Clinic.Controllers
         public async Task<IActionResult> SignUpAsync(DoctorRegistrationModelView doctorReg)
         {
             var res = await _doctorManager.SignUp(doctorReg);
+
             return Ok(res);
         }
 

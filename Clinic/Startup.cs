@@ -9,6 +9,7 @@ using Clinic_DbModel.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -76,7 +77,9 @@ namespace Clinic
             });
          
             services.AddControllers();
+            services.AddHttpContextAccessor();
             services.AddSingleton(sp => _mapperConfiguration.CreateMapper());
+            services.AddSingleton<IHttpContextAccessor,HttpContextAccessor>();
             services.AddScoped<IPatientManager, PatientManager>();
             services.AddScoped<IDoctorManager, DoctorManager>();
             services.AddScoped<ISpecializationManager, SpecializationManager>(); 

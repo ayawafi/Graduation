@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using Clinic_Core.Helper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
+using System.Net.WebSockets;
 
 namespace Clinic_Core.Managers.Services
 {
@@ -170,6 +171,7 @@ namespace Clinic_Core.Managers.Services
         {
 
             var userClaims = await _userManager.GetClaimsAsync(user);
+            //int DoctorId = 5;
             var roles = await _userManager.GetRolesAsync(user);
             var Centerclaims = new List<Claim>
                             {
@@ -187,6 +189,7 @@ namespace Clinic_Core.Managers.Services
                 //new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
                 new Claim("FirstName", user.FirstName),
                 new Claim("LastName", user.LastName),
+                new Claim("DoctorId", user.Id),
                 //new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim("uid", user.Id)
