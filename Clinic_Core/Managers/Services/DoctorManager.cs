@@ -127,7 +127,7 @@ namespace Clinic_Core.Managers.Services
 
 
 
-        public string CompleteDoctorProfile(string DoctorId, UpdateDoctorVM doctor, ApplicationUserVM appUser)
+        public string CompleteDoctorProfile(string DoctorId, UpdateDoctorVM doctor)
         {
             var doc = new Doctor
             {
@@ -162,22 +162,22 @@ namespace Clinic_Core.Managers.Services
             if(existUser == null)
                 return " User doesn't exist";
             
-            existUser.UserName = appUser.UserName;
-            existUser.PhoneNumber = appUser.PhoneNumber;
-            existUser.DateOfBirth = appUser.DateOfBirth;
-            existUser.Image = appUser.Image;
-            existUser.Gender = appUser.Gender;
+            existUser.UserName = doctor.UserName;
+            existUser.PhoneNumber = doctor.PhoneNumber;
+            existUser.DateOfBirth = doctor.DateOfBirth;
+            existUser.Image = doctor.Image;
+            existUser.Gender = doctor.Gender;
             _dbContext.SaveChanges();
             return "Profile is Complete";
         }
        
-        public string UpdateDoctorProfile(string DoctorId, UpdateDoctorVM doctor, ApplicationUserVM appUser)
+        public string UpdateDoctorProfile(string DoctorId, UpdateDoctorVM doctor)
         {
             var user = _dbContext.Users.FirstOrDefault(x => x.Id == DoctorId);
             if (user == null)
                 return "user desen't exist";
-            user.PhoneNumber = appUser.PhoneNumber;
-            user.Image = appUser.Image;
+            user.PhoneNumber = doctor.PhoneNumber;
+            user.Image = doctor.Image;
 
             var doc = _dbContext.Doctors.FirstOrDefault(x => x.UserId == DoctorId);
             if (doc == null)

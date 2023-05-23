@@ -70,16 +70,16 @@ namespace Clinic.Controllers
 
         [Route("api/doctor/CompleteDoctorProfile")]
         [HttpPost]
-        public IActionResult CompleteDoctorProfile([FromBody]UpdateDoctorVM doctor, [FromQuery] ApplicationUserVM appUser)
+        public IActionResult CompleteDoctorProfile( UpdateDoctorVM doctor)
         {
-            var result = _doctorManager.CompleteDoctorProfile(_DoctorId, doctor, appUser);
+            var result = _doctorManager.CompleteDoctorProfile(_DoctorId, doctor);
             return Ok(result);
         }
         [Route("api/doctor/updateDoctorProfile")]
         [HttpPost]
-        public IActionResult UpdateDoctorProfile([FromBody] UpdateDoctorVM doctor, [FromQuery] ApplicationUserVM appUser)
+        public IActionResult UpdateDoctorProfile(UpdateDoctorVM doctor)
         {
-            var result = _doctorManager.UpdateDoctorProfile(_DoctorId, doctor, appUser);
+            var result = _doctorManager.UpdateDoctorProfile(_DoctorId, doctor);
             return Ok(result);
         }
         [AllowAnonymous]

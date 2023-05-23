@@ -15,8 +15,8 @@ namespace clinic_Core.Managers.Interfaces
         List<ApplicationUser> GetAllPatients();
         List<Doctor> GetTopDoctors();
         List<Doctor> GetTopDoctorsBySpecificNumber(int Number);
-        string CompleteDoctorProfile(string DoctorId, UpdateDoctorVM doctor, ApplicationUserVM appUser);
-        string UpdateDoctorProfile(string DoctorId, UpdateDoctorVM doctor, ApplicationUserVM appUser);
+        string CompleteDoctorProfile(string DoctorId, UpdateDoctorVM doctor);
+        string UpdateDoctorProfile(string DoctorId, UpdateDoctorVM doctor);
         List<Doctor> SesrchDoctors(string gender, string Specialty);
 
     }

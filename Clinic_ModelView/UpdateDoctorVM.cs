@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Clinic_ModelView
 {
-    public class UpdateDoctorVM
+    public class UpdateDoctorVM : ApplicationUserVM
     {
         public string UserId { get; set; }
         public string AboutMe { get; set; }
