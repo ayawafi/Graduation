@@ -1,21 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-#nullable disable
-
-namespace Clinic_DbModel.Models
+namespace Clinic_ModelView
 {
-    public  class Doctor
+    public class UpdateDoctorVM
     {
-        public Doctor()
-        {
-            Appointments = new HashSet<Appointment>();
-            Blogs = new HashSet<Blog>();
-            Scheduletimings = new HashSet<Scheduletiming>();
-            Socialmediaurls = new HashSet<Socialmediaurl>();
-        }
-
-        public int Id { get; set; }
         public string UserId { get; set; }
         public string AboutMe { get; set; }
         public string Pricing { get; set; }
@@ -36,13 +28,5 @@ namespace Clinic_DbModel.Models
         public string Membership { get; set; }
 
         public string Designation { get; set; }
-        
-        public virtual ApplicationUser ApplicationUser { get; set; }
-
-        public virtual Specialization Specialty { get; set; }
-        public virtual ICollection<Appointment> Appointments { get; set; }
-        public virtual ICollection<Blog> Blogs { get; set; }
-        public virtual ICollection<Scheduletiming> Scheduletimings { get; set; }
-        public virtual ICollection<Socialmediaurl> Socialmediaurls { get; set; }
     }
 }

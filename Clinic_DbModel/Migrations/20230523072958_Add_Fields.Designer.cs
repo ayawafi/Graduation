@@ -3,6 +3,7 @@ using System;
 using Clinic_DbModel.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Clinic_DbModel.Migrations
 {
     [DbContext(typeof(clinic_dbContext))]
-    partial class clinic_dbContextModelSnapshot : ModelSnapshot
+    [Migration("20230523072958_Add_Fields")]
+    partial class Add_Fields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -193,13 +195,17 @@ namespace Clinic_DbModel.Migrations
                     b.Property<string>("AboutMe")
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Address")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
                     b.Property<string>("ApplicationUserId")
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("Awards")
                         .HasColumnType("longtext");
 
-                    b.Property<int?>("AwardsYear")
+                    b.Property<int>("AwardsYear")
                         .HasColumnType("int");
 
                     b.Property<string>("ClinicAddress")
@@ -223,13 +229,17 @@ namespace Clinic_DbModel.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
+                    b.Property<string>("DoctorSpecialization")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
                     b.Property<string>("Experience")
                         .HasColumnType("longtext");
 
-                    b.Property<int?>("ExperienceFrom")
+                    b.Property<int>("ExperienceFrom")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ExperienceTo")
+                    b.Property<int>("ExperienceTo")
                         .HasColumnType("int");
 
                     b.Property<string>("Membership")
@@ -240,9 +250,6 @@ namespace Clinic_DbModel.Migrations
 
                     b.Property<string>("Registration")
                         .HasColumnType("longtext");
-
-                    b.Property<int?>("RegistrationYear")
-                        .HasColumnType("int");
 
                     b.Property<int?>("SpecialtyId")
                         .HasColumnType("int")

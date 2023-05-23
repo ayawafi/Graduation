@@ -111,9 +111,6 @@ namespace Clinic_DbModel.Models
 
                 entity.HasIndex(e => e.SpecialtyId, "fk_doctor_specialty_idx");
 
-                entity.Property(e => e.Address).HasMaxLength(255);
-
-
                 entity.Property(e => e.College).HasMaxLength(255);
 
                
@@ -121,10 +118,7 @@ namespace Clinic_DbModel.Models
 
                 entity.Property(e => e.DoctorServices).HasMaxLength(255);
 
-                entity.Property(e => e.DoctorSpecialization).HasMaxLength(255);
-
                 entity.Property(e => e.SpecialtyId).HasColumnName("Specialty_Id");
-
 
                 entity.Property(e => e.YearOfCompletion).HasMaxLength(255);
 

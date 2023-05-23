@@ -22,7 +22,7 @@ namespace Clinic.Controllers
         [HttpPost]
         public IActionResult AddScheduletiming(int doctorId, ScheduletimingModelView scheduletiming)
         {
-            doctorId = 1;
+            
             var time = _scheduletimingManager.AddScheduletiming(doctorId, scheduletiming);
             return Ok(time);
         }

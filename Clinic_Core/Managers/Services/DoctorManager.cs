@@ -74,13 +74,15 @@ namespace Clinic_Core.Managers.Services
 
                 _dbContext.SaveChanges();
                 var jwtSecurityToken = await CreateJwtToken(doctor);
-
-                return new LoginPatientResponse
-                {
-                    Email = doctor.Email,
-                    IsValid = true,
-                    Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
-                    Message = "Login Successfully"
+            var token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+                var newDoc = _dbContext.Users.FirstOrDefault(x => x.Email == doctor.Email);
+            return new LoginPatientResponse
+            {
+                Id = newDoc.Id,
+                Email = doctor.Email,
+                IsValid = true,
+                Token = token,
+            Message = "Login Successfully"
                 };
             
               }
@@ -122,6 +124,96 @@ namespace Clinic_Core.Managers.Services
 
             return result;
         }
+
+
+
+        public string CompleteDoctorProfile(string DoctorId, UpdateDoctorVM doctor, ApplicationUserVM appUser)
+        {
+            var doc = new Doctor
+            {
+                UserId = DoctorId,
+                ClinicAddress = doctor.ClinicAddress,
+                ClinicName = doctor.ClinicName,
+                Degree = doctor.Degree,
+                College = doctor.College,
+                YearOfCompletion = doctor.YearOfCompletion,
+                Experience= doctor.Experience,
+                ExperienceFrom = doctor.ExperienceFrom,
+                ExperienceTo = doctor.ExperienceTo,
+                Designation = doctor.Designation,
+                Registration = doctor.Registration,
+                RegistrationYear = doctor.RegistrationYear,
+                Membership = doctor.Membership,
+                Awards = doctor.Awards,
+                AwardsYear = doctor.AwardsYear,
+                DoctorServices = doctor.DoctorServices,
+                SpecialtyId = doctor.SpecialtyId,
+                AboutMe = doctor.AboutMe,
+                Pricing = doctor.Pricing,
+            };
+            var existDoctor = _dbContext.Doctors.FirstOrDefault(x => x.UserId == DoctorId);
+            if (existDoctor != null)
+                return " Doctor was exist";
+
+
+
+            _dbContext.Doctors.Add(doc);
+            var existUser = _dbContext.Users.FirstOrDefault(x => x.Id == DoctorId);
+            if(existUser == null)
+                return " User doesn't exist";
+            
+            existUser.UserName = appUser.UserName;
+            existUser.PhoneNumber = appUser.PhoneNumber;
+            existUser.DateOfBirth = appUser.DateOfBirth;
+            existUser.Image = appUser.Image;
+            existUser.Gender = appUser.Gender;
+            _dbContext.SaveChanges();
+            return "Profile is Complete";
+        }
+       
+        public string UpdateDoctorProfile(string DoctorId, UpdateDoctorVM doctor, ApplicationUserVM appUser)
+        {
+            var user = _dbContext.Users.FirstOrDefault(x => x.Id == DoctorId);
+            if (user == null)
+                return "user desen't exist";
+            user.PhoneNumber = appUser.PhoneNumber;
+            user.Image = appUser.Image;
+
+            var doc = _dbContext.Doctors.FirstOrDefault(x => x.UserId == DoctorId);
+            if (doc == null)
+                return "user desen't exist";
+
+            doc.ClinicAddress = doctor.ClinicAddress;
+            doc.ClinicName = doctor.ClinicName;
+            doc.Experience = doctor.Experience;
+            doc.ExperienceFrom = doctor.ExperienceFrom;
+            doc.ExperienceTo = doctor.ExperienceTo;
+            doc.Designation = doctor.Designation;
+            doc.Registration = doctor.Registration;
+            doc.RegistrationYear = doctor.RegistrationYear;
+            doc.Awards = doctor.Awards;
+            doc.AwardsYear = doctor.AwardsYear;
+            doc.DoctorServices = doctor.DoctorServices;
+            doc.AboutMe = doctor.AboutMe;
+            doc.Pricing = doctor.Pricing;
+
+
+            _dbContext.SaveChanges();
+
+            return "done";
+        }
+       
+        public List<Doctor> SesrchDoctors(string gender, string Specialty)
+        {
+            var result = _dbContext.Doctors.Include(x => x.Specialty)
+                                            .Where( x => x.ApplicationUser.Gender == gender
+                                            && x.Specialty.SpecialtyName == Specialty).ToList();
+
+
+            return result;
+           
+        }
+
         #endregion Public 
 
         #region private

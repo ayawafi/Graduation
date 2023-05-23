@@ -3,6 +3,7 @@ using System;
 using Clinic_DbModel.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Clinic_DbModel.Migrations
 {
     [DbContext(typeof(clinic_dbContext))]
-    partial class clinic_dbContextModelSnapshot : ModelSnapshot
+    [Migration("20230523073140_Add_Field")]
+    partial class Add_Field
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -193,6 +195,10 @@ namespace Clinic_DbModel.Migrations
                     b.Property<string>("AboutMe")
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Address")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
                     b.Property<string>("ApplicationUserId")
                         .HasColumnType("varchar(255)");
 
@@ -220,6 +226,10 @@ namespace Clinic_DbModel.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("DoctorServices")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("DoctorSpecialization")
                         .HasMaxLength(255)
                         .HasColumnType("varchar(255)");
 
