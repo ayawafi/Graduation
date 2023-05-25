@@ -4,6 +4,7 @@ using Clinic_ModelView;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace Clinic.Controllers
 {
@@ -20,19 +21,27 @@ namespace Clinic.Controllers
         }
         [Route("api/scheduletiming/addscheduletiming")]
         [HttpPost]
-        public IActionResult AddScheduletiming(int doctorId, ScheduletimingModelView scheduletiming)
+        public IActionResult AddScheduletiming(ScheduletimingModelView scheduletiming)
         {
             
-            var time = _scheduletimingManager.AddScheduletiming(doctorId, scheduletiming);
+            
+            var time = _scheduletimingManager.AddScheduletiming(_DoctorId, scheduletiming);
             return Ok(time);
         }
 
-        [Route("api/scheduletiming/getscheduletimingfordoctor")]
+        [Route("api/scheduletiming/getBusinessHoursForDoctor")]
         [HttpGet]
-        public IActionResult GetScheduletimingForDoctor(int doctorId)
+        public IActionResult GetBusinessHoursForDoctor()
         {
             var d = _DoctorId;
-            var result = _scheduletimingManager.GetScheduletimingForDoctor(doctorId);
+            var result = _scheduletimingManager.GetBusinessHoursForDoctor(_DoctorId);
+            return Ok(result);
+        }
+        [Route("api/scheduletiming/getScheduletimingsForDoctor")]
+        [HttpGet]
+        public IActionResult GetScheduletimingsForDoctor( string day)
+        {
+            var result = _scheduletimingManager.GetScheduletimingsForDoctor(_DoctorId, day);
             return Ok(result);
         }
     }

@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
+using Clinic_Common.Extensions;
 using Clinic_Core.Managers.Interfaces;
 using Clinic_DbModel.Models;
 using Clinic_ModelView;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+
 
 namespace Clinic_Core.Managers.Services
 {
@@ -20,11 +21,12 @@ namespace Clinic_Core.Managers.Services
             _dbContext = dbContext;
             _mapper = mapper;
         }
-        public ScheduletimingModelView AddScheduletiming(int DoctorId , ScheduletimingModelView scheduletiming)
+        public ScheduletimingModelView AddScheduletiming(string DoctorId , ScheduletimingModelView scheduletiming)
         {
+         var uId=   _dbContext.Doctors.FirstOrDefault(x=>x.UserId==DoctorId);
             var newScheduletiming = new ScheduletimingModelView
             {
-                DoctorId = DoctorId,
+                DoctorId = uId.Id,
                 Day = scheduletiming.Day,
                 StartTime = scheduletiming.StartTime,
                 EndTime = scheduletiming.EndTime,
@@ -36,12 +38,55 @@ namespace Clinic_Core.Managers.Services
             return newScheduletiming;
 
         }
-        public List<Scheduletiming>  GetScheduletimingForDoctor(int DoctorId)
+
+        //هاي لعرض Doctor Profile/Business Hours
+        public List<ScheduletimingVM> GetBusinessHoursForDoctor(string DoctorId)
         {
-           var result = _dbContext.Scheduletimings.Where(x => x.DoctorId == DoctorId).ToList();
+            var uId = _dbContext.Doctors.FirstOrDefault(x => x.UserId == DoctorId);
+            var result = _dbContext.Scheduletimings.Where(x => x.DoctorId == uId.Id)
+                                                    .Select(z => new ScheduletimingVM { 
+                                                        Day = z.Day,
+                                                        AvailableTime =z.StartTime.ToString("hh:mm tt") + "-" + z.EndTime.ToString("hh:mm tt") })
+                                                    .ToList();
             return result;
+        }
+      
+        public List<string> GetScheduletimingsForDoctor(string doctorId,string day )
+        {
+            var uId = _dbContext.Doctors.FirstOrDefault(x => x.UserId == doctorId);
+            var workHours = _dbContext.Scheduletimings.Where(z => z.DoctorId == uId.Id)
+                                                        .FirstOrDefault(x => x.Day == day); 
+
+            if (workHours == null)
+            {
+                throw new ServiceValidationException("Work hours not found in the database.");
+            }
+
+            DateTime startTime = workHours.StartTime;
+            DateTime finishTime = workHours.EndTime;
+           TimeSpan durationTime = TimeSpan.FromMinutes(workHours.DurationTime);
+            
+            List<string> timeIntervals = GenerateTimeIntervals(startTime, finishTime, durationTime);
+
+            return timeIntervals;
         }
 
 
+
+
+
+        private List<string> GenerateTimeIntervals(DateTime start, DateTime finish, TimeSpan timeDuration)
+        {
+            List<string> timeIntervals = new List<string>();
+
+            for (DateTime current = start; current.Add(timeDuration) <= finish; current = current.Add(timeDuration))
+            {
+                string timeInterval = current.ToString("h:mm tt") + " - " + current.Add(timeDuration).ToString("h:mm tt");
+                timeIntervals.Add(timeInterval);
+            }
+
+            return timeIntervals;
+
+        }
     }
 }

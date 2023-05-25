@@ -65,6 +65,7 @@ namespace Clinic_Core.Managers.Services
                 LastName = PatientReg.LastName,
                 Email = PatientReg.Email,
                 PasswordHash = hashedPassword,
+                UserType = "Patient"
             }).Entity;
 
             _dbContext.SaveChanges();
@@ -169,6 +170,8 @@ namespace Clinic_Core.Managers.Services
                 //new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
                 new Claim("FirstName", user.FirstName),
                 new Claim("LastName", user.LastName),
+                 new Claim("UserType", user.UserType),
+
                 //new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim("uid", user.Id)

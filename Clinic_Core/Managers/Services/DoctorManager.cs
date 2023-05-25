@@ -18,6 +18,7 @@ using Clinic_Core.Helper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using System.Net.WebSockets;
+using MySqlX.XDevAPI.Common;
 
 namespace Clinic_Core.Managers.Services
 {
@@ -68,6 +69,7 @@ namespace Clinic_Core.Managers.Services
                     LastName = DoctorReg.LastName,
                     Email = DoctorReg.Email,
                     PasswordHash = hashedPassword,
+                    UserType ="Doctor"
 
                 }).Entity;
 
@@ -202,16 +204,17 @@ namespace Clinic_Core.Managers.Services
 
             return "done";
         }
-       
-        public List<Doctor> SearchDoctors(string gender, string Specialty)
-        {
-            var result = _dbContext.Doctors.Include(x => x.Specialty)
-                                            .Where( x => x.ApplicationUser.Gender == gender
-                                            && x.Specialty.SpecialtyName == Specialty).ToList();
 
+        public List<Doctor> SearchDoctors(string gender, int specialtyId)
+        {
+           var result = _dbContext.Doctors
+        .Where(d => d.SpecialtyId == specialtyId)
+        .Join(_dbContext.Users, d => d.UserId, au => au.Id, (d, au) => new { Doctor = d, ApplicationUser = au })
+        .Where(x => x.ApplicationUser.Gender==gender)
+        .Select(x => x.Doctor)
+        .ToList();
 
             return result;
-           
         }
 
         #endregion Public 
@@ -282,6 +285,7 @@ namespace Clinic_Core.Managers.Services
                 new Claim("FirstName", user.FirstName),
                 new Claim("LastName", user.LastName),
                 new Claim("DoctorId", user.Id),
+                new Claim("UserType", user.UserType),
                 //new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim("uid", user.Id)

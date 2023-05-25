@@ -85,7 +85,7 @@ namespace Clinic.Controllers
         [AllowAnonymous]
         [Route("api/doctor/SearchDoctors")]
         [HttpGet]
-        public IActionResult SearchDoctors(string gender, string Specialty)
+        public IActionResult SearchDoctors(string gender, int Specialty)
         {
             var result = _doctorManager.SearchDoctors(gender, Specialty);
             return Ok(result);

@@ -2,6 +2,7 @@ using AutoMapper;
 using Clinic.Helper;
 using Clinic_Common.Extinsions;
 using clinic_Core.Managers.Interfaces;
+using Clinic_Core.Managers;
 using Clinic_Core.Managers.Interfaces;
 using Clinic_Core.Managers.Services;
 using Clinic_Core.Mapper;
@@ -81,6 +82,7 @@ namespace Clinic
             services.AddSingleton(sp => _mapperConfiguration.CreateMapper());
             services.AddSingleton<IHttpContextAccessor,HttpContextAccessor>();
             services.AddScoped<IPatientManager, PatientManager>();
+            services.AddScoped<IAppointmentManager, AppointmentManager>();
             services.AddScoped<IDoctorManager, DoctorManager>();
             services.AddScoped<ISpecializationManager, SpecializationManager>(); 
             services.AddScoped<IScheduletimingManager, ScheduletimingManager>();

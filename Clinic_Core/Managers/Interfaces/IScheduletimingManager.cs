@@ -1,16 +1,13 @@
-﻿using Clinic_DbModel.Models;
-using Clinic_ModelView;
-using System;
+﻿using Clinic_ModelView;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Clinic_Core.Managers.Interfaces
 {
     public interface IScheduletimingManager
     {
-        ScheduletimingModelView AddScheduletiming(int DoctorId, ScheduletimingModelView scheduletiming);
-        List<Scheduletiming> GetScheduletimingForDoctor(int DoctorId);
+        ScheduletimingModelView AddScheduletiming(string DoctorId, ScheduletimingModelView scheduletiming);
+        List<ScheduletimingVM> GetBusinessHoursForDoctor(string DoctorId);
+        List<string> GetScheduletimingsForDoctor(string doctorId, string day);
+
     }
 }
