@@ -27,7 +27,7 @@ namespace Clinic.Controllers
         [AllowAnonymous]
         [Route("api/doctor/SignUp")]
         [HttpPost]
-        public async Task<IActionResult> SignUpAsync(DoctorRegistrationModelView doctorReg)
+        public async Task<IActionResult> SignUpAsync([FromForm]DoctorRegistrationModelView doctorReg)
         {
             var res = await _doctorManager.SignUp(doctorReg);
 
@@ -37,7 +37,7 @@ namespace Clinic.Controllers
         [AllowAnonymous]
         [Route("api/doctor/SignIn")]
         [HttpPost]
-        public async Task<IActionResult> SignIn(PatientLoginModelView DoctorLogin)
+        public async Task<IActionResult> SignIn([FromForm]PatientLoginModelView DoctorLogin)
         {
             var res = await _doctorManager.SignIn(DoctorLogin);
             return Ok(res);
@@ -70,24 +70,24 @@ namespace Clinic.Controllers
 
         [Route("api/doctor/CompleteDoctorProfile")]
         [HttpPost]
-        public IActionResult CompleteDoctorProfile( UpdateDoctorVM doctor)
+        public IActionResult CompleteDoctorProfile([FromForm] UpdateDoctorVM doctor)
         {
             var result = _doctorManager.CompleteDoctorProfile(_DoctorId, doctor);
             return Ok(result);
         }
         [Route("api/doctor/updateDoctorProfile")]
         [HttpPost]
-        public IActionResult UpdateDoctorProfile(UpdateDoctorVM doctor)
+        public IActionResult UpdateDoctorProfile([FromForm] UpdateDoctorVM doctor)
         {
             var result = _doctorManager.UpdateDoctorProfile(_DoctorId, doctor);
             return Ok(result);
         }
         [AllowAnonymous]
-        [Route("api/doctor/sesrchDoctors")]
+        [Route("api/doctor/SearchDoctors")]
         [HttpGet]
-        public IActionResult SesrchDoctors(string gender, string Specialty)
+        public IActionResult SearchDoctors(string gender, string Specialty)
         {
-            var result = _doctorManager.SesrchDoctors(gender, Specialty);
+            var result = _doctorManager.SearchDoctors(gender, Specialty);
             return Ok(result);
         }
 

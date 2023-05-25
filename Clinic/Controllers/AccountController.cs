@@ -30,12 +30,12 @@ namespace Clinic.Controllers
             _signInManager = signInManager;
             _jwt = jwt.Value;
         }
-        [Route("LoginUser")]
-        [HttpPost]
-        public async Task<IActionResult> Login(PatientLoginModelView DoctorLogin) => Ok(await GetTokenAsync(DoctorLogin));
+        //[Route("LoginUser")]
+        //[HttpPost]
+        //public async Task<IActionResult> Login(PatientLoginModelView DoctorLogin) => Ok(await GetTokenAsync(DoctorLogin));
 
-        [Route("RegisterUser")]
-        [HttpPost]
+        //[Route("RegisterUser")]
+        //[HttpPost]
         //public async Task<IActionResult> Register(PatientLoginModelView DoctorLogin) => Ok(await RegisterUser(DoctorLogin));
 
         //private async Task<LoginPatientResponse> RegisterUser(PatientLoginModelView model)

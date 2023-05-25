@@ -78,7 +78,15 @@ namespace Clinic_Core.Managers.Services
                 Message = "Login Successfully"
             };
         }
-
+        public List<ApplicationUser> UpdateProfilePatient(int userId, ApplicationUser appUser)
+        {
+            var user = _dbContext.Users.Find(userId);
+            if (user == null)
+                throw new ServiceValidationException("user not exist");
+            user.Email = appUser.Email;
+            user.PasswordHash = appUser.PasswordHash;
+            return _dbContext.Users.ToList();
+        }
         //public LoginPatientResponse SignIn(PatientLoginModelView PatientLogin)
         //{
         //    var Patient = _dbContext.Users.FirstOrDefault(x => x.Email

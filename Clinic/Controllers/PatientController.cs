@@ -18,7 +18,7 @@ namespace Clinic.Controllers
         }
         [Route("api/patient/SignUp")]
         [HttpPost]
-        public async Task<IActionResult> SignUp(PatientRegistrationModelView patientReg)
+        public async Task<IActionResult> SignUp([FromForm]PatientRegistrationModelView patientReg)
         {
             var res = await _patientManager.SignUp(patientReg);
             return Ok(res);

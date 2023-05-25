@@ -17,7 +17,7 @@ namespace clinic_Core.Managers.Interfaces
         List<Doctor> GetTopDoctorsBySpecificNumber(int Number);
         string CompleteDoctorProfile(string DoctorId, UpdateDoctorVM doctor);
         string UpdateDoctorProfile(string DoctorId, UpdateDoctorVM doctor);
-        List<Doctor> SesrchDoctors(string gender, string Specialty);
+        List<Doctor> SearchDoctors(string gender, string Specialty);
 
     }
 }

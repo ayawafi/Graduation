@@ -203,7 +203,7 @@ namespace Clinic_Core.Managers.Services
             return "done";
         }
        
-        public List<Doctor> SesrchDoctors(string gender, string Specialty)
+        public List<Doctor> SearchDoctors(string gender, string Specialty)
         {
             var result = _dbContext.Doctors.Include(x => x.Specialty)
                                             .Where( x => x.ApplicationUser.Gender == gender
