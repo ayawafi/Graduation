@@ -78,29 +78,31 @@ namespace Clinic_Core.Managers.Services
                 Message = "Login Successfully"
             };
         }
-        public List<ApplicationUser> UpdateProfilePatient(int userId, ApplicationUser appUser)
+
+        public ApplicationUser UpdateProfilePatient(string userId, UpdatePatientProfilVM appUser)
         {
             var user = _dbContext.Users.Find(userId);
             if (user == null)
                 throw new ServiceValidationException("user not exist");
             user.Email = appUser.Email;
-            user.PasswordHash = appUser.PasswordHash;
-            return _dbContext.Users.ToList();
+            user.PhoneNumber = appUser.PhoneNumber;
+            user.Address = appUser.Address;
+            _dbContext.SaveChanges();
+
+            var userAfterUpdate = _dbContext.Users.Find(userId);
+            return userAfterUpdate;
         }
-        //public LoginPatientResponse SignIn(PatientLoginModelView PatientLogin)
-        //{
-        //    var Patient = _dbContext.Users.FirstOrDefault(x => x.Email
-        //                  .Equals(PatientLogin.Email,
-        //                  StringComparison.InvariantCultureIgnoreCase));
 
-        //    if (Patient == null || !VerifyHashPassword(PatientLogin.Password, Patient.PasswordHash))
-        //    {
-        //        throw new ServiceValidationException(300, "Invalid Email or password received");
-        //    }
-
-        //    var result = _mapper.Map<LoginPatientResponse>(Patient);
-        //    return result;
-        //}
+        public string CompletePatientProfile(string userId, PatientProfileSettings profileSettings)
+        {
+            var user = _dbContext.Users.Find(userId);
+            if (user == null)
+                throw new ServiceValidationException("user not exist");
+            user.DateOfBirth = profileSettings.DateOfBirth;
+            user.BloodGroup = profileSettings.BloodGroup;
+            user.Address = profileSettings.Address;
+            return "done";
+        }
         #endregion Public 
 
         #region private

@@ -1,7 +1,9 @@
 ﻿using Clinic_Core.Managers.Interfaces;
+using Clinic_DbModel.Models;
 using Clinic_ModelView;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -9,12 +11,15 @@ namespace Clinic.Controllers
 {
     
     [ApiController]
-    public class PatientController : ControllerBase
+    public class PatientController : BaseController
     {
         private IPatientManager _patientManager;
-        public PatientController(IPatientManager patientManager)
+        private readonly IHttpContextAccessor __httpContextAccessor;     
+        public PatientController(IPatientManager patientManager, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _patientManager = patientManager;
+            __httpContextAccessor = httpContextAccessor;
+
         }
         [Route("api/patient/SignUp")]
         [HttpPost]
@@ -23,7 +28,20 @@ namespace Clinic.Controllers
             var res = await _patientManager.SignUp(patientReg);
             return Ok(res);
         }
-
+        [Route("api/patient/updateProfilePatient")]
+        [HttpPost]
+        public  IActionResult UpdateProfilePatient([FromForm] UpdatePatientProfilVM appUser)
+        {
+            var result = _patientManager.UpdateProfilePatient(_DoctorId, appUser);
+            return Ok(result);
+        }
+        [Route("api/patient/CompletePatientProfile")]
+        [HttpPost]
+        public IActionResult CompletePatientProfile([FromForm] PatientProfileSettings profileSettings)
+        {
+            var result = _patientManager.CompletePatientProfile(_DoctorId, profileSettings);
+            return Ok(result);
+        }
 
         //[Route("api/Patient/SignIn")]
         //[HttpPost]
