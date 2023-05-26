@@ -76,7 +76,7 @@ namespace Clinic.Controllers
             return Ok(result);
         }
         [Route("api/doctor/updateDoctorProfile")]
-        [HttpPost]
+        [HttpPut]
         public IActionResult UpdateDoctorProfile([FromForm] UpdateDoctorVM doctor)
         {
             var result = _doctorManager.UpdateDoctorProfile(_DoctorId, doctor);

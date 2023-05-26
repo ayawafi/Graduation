@@ -28,18 +28,19 @@ namespace Clinic.Controllers
             var res = await _patientManager.SignUp(patientReg);
             return Ok(res);
         }
-        [Route("api/patient/updateProfilePatient")]
-        [HttpPost]
-        public  IActionResult UpdateProfilePatient([FromForm] UpdatePatientProfilVM appUser)
-        {
-            var result = _patientManager.UpdateProfilePatient(_DoctorId, appUser);
-            return Ok(result);
-        }
+       
         [Route("api/patient/CompletePatientProfile")]
         [HttpPost]
         public IActionResult CompletePatientProfile([FromForm] PatientProfileSettings profileSettings)
         {
             var result = _patientManager.CompletePatientProfile(_DoctorId, profileSettings);
+            return Ok(result);
+        }
+        [Route("api/patient/updateProfilePatient")]
+        [HttpPut]
+        public IActionResult UpdateProfilePatient([FromForm] UpdatePatientProfilVM appUser)
+        {
+            var result = _patientManager.UpdateProfilePatient(_DoctorId, appUser);
             return Ok(result);
         }
 

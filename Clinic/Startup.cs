@@ -86,6 +86,7 @@ namespace Clinic
             services.AddScoped<IDoctorManager, DoctorManager>();
             services.AddScoped<ISpecializationManager, SpecializationManager>(); 
             services.AddScoped<IScheduletimingManager, ScheduletimingManager>();
+            services.AddScoped<IBlogManager, BlogManager>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Clinic", Version = "v1" });

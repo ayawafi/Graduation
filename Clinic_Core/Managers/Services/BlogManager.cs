@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using Clinic_Common.Extensions;
 using Clinic_Core.Managers.Interfaces;
 using Clinic_DbModel.Models;
+using Clinic_ModelView;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,5 +21,36 @@ namespace Clinic_Core.Managers
             _dbContext = dbContext;
             _mapper = mapper;
         }
+
+        public BlogModelView CreateBlog(int DoctorId, BlogModelView blogVM)
+        {
+             if (!_dbContext.Doctors.Any(d => d.Id == DoctorId))
+                {
+                   throw new ServiceValidationException(300,"Invalid Doctor");
+                }
+
+                var blog = new Blog
+                {
+                    DoctorId = DoctorId,
+                    Title = blogVM.Title,
+                    Content = blogVM.Content,
+                    Image = blogVM.Image,
+                    CreatedDate = blogVM.CreatedDate
+                };
+
+                _dbContext.Blogs.Add(blog);
+                _dbContext.SaveChanges();
+
+                var result = _mapper.Map<BlogModelView>(blog);
+                return result;
+            }
+
+        public List<Blog> GetAllBlogs()
+        {
+            var result = _dbContext.Blogs.ToList();
+
+            return result;
+        }
     }
-}
+    }
+
