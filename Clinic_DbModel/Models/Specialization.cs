@@ -14,6 +14,7 @@ namespace Clinic_DbModel.Models
 
         public int Id { get; set; }
         public string SpecialtyName { get; set; }
+        public string Image { get; set; }
         public bool IsDelete { get; set; }
 
         public virtual ICollection<Doctor> Doctors { get; set; }

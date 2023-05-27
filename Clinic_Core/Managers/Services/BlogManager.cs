@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
-using Clinic_Common.Extensions;
 using Clinic_Core.Managers.Interfaces;
 using Clinic_DbModel.Models;
 using Clinic_ModelView;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Clinic_Core.Managers
 {
@@ -15,42 +15,93 @@ namespace Clinic_Core.Managers
     {
         private clinic_dbContext _dbContext;
         private IMapper _mapper;
+        private IWebHostEnvironment _host;
 
-        public BlogManager(clinic_dbContext dbContext, IMapper mapper)
+        public BlogManager(clinic_dbContext dbContext, IMapper mapper, IWebHostEnvironment host)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _host = host;
         }
 
-        public BlogModelView CreateBlog(int DoctorId, BlogModelView blogVM)
+        public ResponseApi CreateBlog(string DoctorId, BlogModelView blogVM)
         {
-             if (!_dbContext.Doctors.Any(d => d.Id == DoctorId))
+            var DId = _dbContext.Doctors.FirstOrDefault(u => u.UserId== DoctorId);
+            string folder = "Uploads/BlogsImages";
+            folder = UploadImage(folder, blogVM.ImageFile);
+            blogVM.Image = folder;
+            var blog = new Blog
                 {
-                   throw new ServiceValidationException(300,"Invalid Doctor");
-                }
-
-                var blog = new Blog
-                {
-                    DoctorId = DoctorId,
+                    DoctorId = DId.Id,
                     Title = blogVM.Title,
                     Content = blogVM.Content,
                     Image = blogVM.Image,
-                    CreatedDate = blogVM.CreatedDate
+                    CreatedDate = DateTime.Now
                 };
+
 
                 _dbContext.Blogs.Add(blog);
                 _dbContext.SaveChanges();
 
+                
                 var result = _mapper.Map<BlogModelView>(blog);
-                return result;
+           
+                var response = new ResponseApi
+                {
+                IsSuccess = true,
+                Message = "Blog is created successfully",
+                Data = result
+                };
+                return response;
+
             }
 
-        public List<Blog> GetAllBlogs()
+        public ResponseApi GetAllBlogs()
         {
-            var result = _dbContext.Blogs.ToList();
+            var result = _dbContext.Blogs.Include(y => y.Doctor)
+                            .ThenInclude(z => z.ApplicationUser)
+                            .Select(x => new
+                            {
+                                x.Doctor.ApplicationUser.FirstName,
+                                x.Title,
+                                x.Content,
+                                x.CreatedDate,
+                                x.Image
+                            }).ToList();
 
-            return result;
+            if (!result.Any())
+            {
+                var response = new ResponseApi
+                {
+                    IsSuccess = true,
+                    Message = "Success , But Data is null",
+                    Data = result
+                };
+                return response;
+            }
+            else
+            {
+                var response = new ResponseApi
+                {
+                    IsSuccess = true,
+                    Message = "Success",
+                    Data = result
+                };
+                return response;
+
+            }
         }
+
+        #region Private
+        private string UploadImage(string folder, IFormFile ImgeFile)
+        {
+            folder += Guid.NewGuid().ToString() + "_" + ImgeFile.FileName;
+            string ImageURL = "/" + folder;
+            string serverFolder = Path.Combine(_host.WebRootPath, folder);
+            ImgeFile.CopyTo(new FileStream(serverFolder, FileMode.Create));
+            return ImageURL;
+        }
+        #endregion Private
     }
-    }
+}
 

@@ -25,4 +25,9 @@
 	  <ProjectReference Include="..\Clinic_Core\Clinic_Core.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="wwwroot\Uploads\BlogsImages\" />
+	  <Folder Include="wwwroot\Uploads\SpecialtyImage\" />
+	</ItemGroup>
+
 </Project>

@@ -3,11 +3,14 @@ using Clinic_Common.Extensions;
 using Clinic_Core.Managers.Interfaces;
 using Clinic_DbModel.Models;
 using Clinic_ModelView;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Clinic_Core.Managers.Services
 {
@@ -15,23 +18,51 @@ namespace Clinic_Core.Managers.Services
     {
         private clinic_dbContext _dbContext;
         private IMapper _mapper;
-        public SpecializationManager(clinic_dbContext dbContext, IMapper mapper)
+        private IWebHostEnvironment _host;
+
+
+
+        public SpecializationManager(clinic_dbContext dbContext, IMapper mapper, IWebHostEnvironment host)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _host = host;
         }
-        public List<Specialization> GetAllSpecialties()
+        public ResponseApi GetAllSpecialties()
         {
-            var result = _dbContext.Specializations.ToList();
+            var result = _dbContext.Specializations.Select(x => new
+            {
+                Id = x.Id,
+                SpecialtyName = x.SpecialtyName,
+                Image = x.Image
+            }).ToList();
 
-            return result;
+            var response = new ResponseApi
+            {
+                IsSuccess = true,
+                Message = "Done",
+                Data = result
+            };
+            return response;
         }
 
-        public List<Specialization> GetSpecialtiesBySpecificNum(int NumberOfSpecialties)
+        public ResponseApi GetSpecialtiesBySpecificNum(int NumberOfSpecialties)
         {
-            var result = _dbContext.Specializations.Take(NumberOfSpecialties).ToList();
+            var result = _dbContext.Specializations.Select(x => new
+            {
+                Id = x.Id,
+                SpecialtyName = x.SpecialtyName,
+                Image = x.Image
+            }).Take(NumberOfSpecialties).ToList();
 
-            return result;
+            var response = new ResponseApi
+            {
+                IsSuccess = true,
+                Message = "Done",
+                Data = result
+            };
+            return response;
+            
         }
 
         public SpectalizationModelView CreateSpecialty(SpectalizationModelView specialtyMV)
@@ -43,10 +74,15 @@ namespace Clinic_Core.Managers.Services
                 throw new ServiceValidationException("Specialty already exist");
             }
 
+            string folder = "Uploads/SpecialtyImage";
+            folder = UploadImage(folder, specialtyMV.ImageFile);
+            specialtyMV.Image = folder;
+
 
             var specialty = _dbContext.Specializations.Add(new Specialization
             {
-                SpecialtyName = specialtyMV.SpecialtyName
+                SpecialtyName = specialtyMV.SpecialtyName,
+                Image = specialtyMV.Image
             }).Entity;
 
             _dbContext.SaveChanges();
@@ -79,6 +115,17 @@ namespace Clinic_Core.Managers.Services
             return _mapper.Map<SpectalizationModelView>(specialty);
         }
 
+
+        #region Private
+                private string UploadImage(string folder, IFormFile ImgeFile)
+                {
+                    folder += Guid.NewGuid().ToString() + "_" + ImgeFile.FileName;
+                    string ImageURL = "/" + folder;
+                    string serverFolder = Path.Combine(_host.WebRootPath, folder);
+                    ImgeFile.CopyTo(new FileStream(serverFolder, FileMode.Create));
+                    return ImageURL;
+                }
+        #endregion Private
     }
 }
 

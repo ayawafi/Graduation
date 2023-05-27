@@ -20,9 +20,9 @@ namespace Clinic.Controllers
         }
         [Route("api/blog/createblog")]
         [HttpPost]
-        public IActionResult CreateBlog(int DoctorId,[FromForm]BlogModelView blogVM)
+        public IActionResult CreateBlog([FromForm]BlogModelView blogVM)
         {
-            var result = _blogManager.CreateBlog(DoctorId, blogVM);
+            var result = _blogManager.CreateBlog(_DoctorId,blogVM);
             return Ok(result);
         }
         [Route("api/blog/getallblogs")]

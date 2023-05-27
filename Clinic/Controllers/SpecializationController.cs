@@ -40,7 +40,7 @@ namespace Clinic.Controllers
 
         [Route("api/specialties/CreateSpecialty")]
         [HttpPost]
-         public IActionResult CreateSpecialty([FromBody] SpectalizationModelView specialtyMV)
+         public IActionResult CreateSpecialty([FromForm] SpectalizationModelView specialtyMV)
         {
             var result = _specializationManager.CreateSpecialty(specialtyMV);
             return Ok(result);

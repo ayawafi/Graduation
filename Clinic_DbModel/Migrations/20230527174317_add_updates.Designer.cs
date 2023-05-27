@@ -3,6 +3,7 @@ using System;
 using Clinic_DbModel.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Clinic_DbModel.Migrations
 {
     [DbContext(typeof(clinic_dbContext))]
-    partial class clinic_dbContextModelSnapshot : ModelSnapshot
+    [Migration("20230527174317_add_updates")]
+    partial class add_updates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -102,7 +104,7 @@ namespace Clinic_DbModel.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Clinic_DbModel.Models.Appointment", b =>
@@ -427,7 +429,7 @@ namespace Clinic_DbModel.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles", (string)null);
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -447,7 +449,7 @@ namespace Clinic_DbModel.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RoleClaims", (string)null);
+                    b.ToTable("RoleClaims");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -467,7 +469,7 @@ namespace Clinic_DbModel.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserClaims", (string)null);
+                    b.ToTable("UserClaims");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -484,7 +486,7 @@ namespace Clinic_DbModel.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("longtext");
 
-                    b.ToTable("UserLogins", (string)null);
+                    b.ToTable("UserLogins");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -495,7 +497,7 @@ namespace Clinic_DbModel.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("longtext");
 
-                    b.ToTable("UserRoles", (string)null);
+                    b.ToTable("UserRoles");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -512,7 +514,7 @@ namespace Clinic_DbModel.Migrations
                     b.Property<string>("Value")
                         .HasColumnType("longtext");
 
-                    b.ToTable("UserTokens", (string)null);
+                    b.ToTable("UserTokens");
                 });
 
             modelBuilder.Entity("Clinic_DbModel.Models.Appointment", b =>
