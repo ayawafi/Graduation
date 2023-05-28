@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -24,7 +25,8 @@ namespace Clinic_ModelView
         public string Country { get; set; }
         public string DoctorSpecialization { get; set; }
         public string DoctorServices { get; set; }
-        public string DoctorImage { get; set; }
+        public string Image { get; set; }
+        public IFormFile ImageFile { get; set; }
         public string Degree { get; set; }
         public string College { get; set; }
         public string YearOfCompletion { get; set; }

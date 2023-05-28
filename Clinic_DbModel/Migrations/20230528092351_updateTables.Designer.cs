@@ -3,6 +3,7 @@ using System;
 using Clinic_DbModel.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Clinic_DbModel.Migrations
 {
     [DbContext(typeof(clinic_dbContext))]
-    partial class clinic_dbContextModelSnapshot : ModelSnapshot
+    [Migration("20230528092351_updateTables")]
+    partial class updateTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -199,6 +201,9 @@ namespace Clinic_DbModel.Migrations
                     b.Property<string>("AboutMe")
                         .HasColumnType("longtext");
 
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("varchar(255)");
+
                     b.Property<string>("Awards")
                         .HasColumnType("longtext");
 
@@ -252,7 +257,7 @@ namespace Clinic_DbModel.Migrations
                         .HasColumnName("Specialty_Id");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("YearOfCompletion")
                         .HasMaxLength(255)
@@ -260,7 +265,7 @@ namespace Clinic_DbModel.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex(new[] { "Id" }, "Id_UNIQUE")
                         .IsUnique()
@@ -543,14 +548,14 @@ namespace Clinic_DbModel.Migrations
 
             modelBuilder.Entity("Clinic_DbModel.Models.Doctor", b =>
                 {
+                    b.HasOne("Clinic_DbModel.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId");
+
                     b.HasOne("Clinic_DbModel.Models.Specialization", "Specialty")
                         .WithMany("Doctors")
                         .HasForeignKey("SpecialtyId")
                         .HasConstraintName("fk_doctor_specialization");
-
-                    b.HasOne("Clinic_DbModel.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("UserId");
 
                     b.Navigation("ApplicationUser");
 

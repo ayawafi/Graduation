@@ -65,14 +65,21 @@ namespace Clinic_Core.Managers.Services
             
         }
 
-        public SpectalizationModelView CreateSpecialty(SpectalizationModelView specialtyMV)
+        public ResponseApi CreateSpecialty(SpectalizationModelView specialtyMV)
         {
             if (_dbContext.Specializations
                           .Any(a => a.SpecialtyName.Equals(specialtyMV.SpecialtyName,
                                     StringComparison.InvariantCultureIgnoreCase)))
             {
-                throw new ServiceValidationException("Specialty already exist");
+                var response = new ResponseApi
+                {
+                    IsSuccess = true,
+                    Message = "Specialty already exist",
+                    Data = null
+                };
+                return response;
             }
+            
 
             string folder = "Uploads/SpecialtyImage";
             folder = UploadImage(folder, specialtyMV.ImageFile);
@@ -88,31 +95,77 @@ namespace Clinic_Core.Managers.Services
             _dbContext.SaveChanges();
 
             var result = _mapper.Map<SpectalizationModelView>(specialty);
-
-            return result;
+            var response1 = new ResponseApi
+            {
+                IsSuccess = true,
+                Message = "Success",
+                Data = result
+            };
+            return response1;
         }
 
-        public SpectalizationModelView UpdateSpecialty(SpectalizationModelView currentSpecialty)
+        public ResponseApi UpdateSpecialty(SpectalizationModelView currentSpecialty)
         {
             var specialty = _dbContext.Specializations
-                        .FirstOrDefault(a => a.Id == currentSpecialty.Id)
-                        ?? throw new ServiceValidationException("Specialty not found");
+                        .FirstOrDefault(a => a.Id == currentSpecialty.Id);
 
+            if (specialty == null)
+            {
+                var response = new ResponseApi
+                {
+                    IsSuccess = false,
+                    Message = "specialty not found",
+                    Data = null
+                };
+                return response;
+            }
+            else
+            {
             specialty.SpecialtyName = currentSpecialty.SpecialtyName;
 
             _dbContext.SaveChanges();
-            return _mapper.Map<SpectalizationModelView>(specialty);
+            var result = _mapper.Map<SpectalizationModelView>(specialty);
+
+            var response = new ResponseApi
+            {
+                IsSuccess = true,
+                Message = "Success",
+                Data = result
+            };
+            return response;
+            }
         }
-        public SpectalizationModelView DeleteSpecialty(SpectalizationModelView currentSpecialty)
+        public ResponseApi DeleteSpecialty(SpectalizationModelView currentSpecialty)
         {
             var specialty = _dbContext.Specializations
                         .FirstOrDefault(a => a.Id == currentSpecialty.Id)
                         ?? throw new ServiceValidationException("specialty not exist");
 
-            specialty.IsDelete = true;
+            if(specialty == null)
+            {
+                var response = new ResponseApi
+                {
+                    IsSuccess = true,
+                    Message = "specialty not found",
+                    Data = null
+                };
+                return response;
+            }
+            else
+            {
+             specialty.IsDelete = true;
 
             _dbContext.SaveChanges();
-            return _mapper.Map<SpectalizationModelView>(specialty);
+            var result = _mapper.Map<SpectalizationModelView>(specialty);
+
+            var response = new ResponseApi
+            {
+                IsSuccess = true,
+                Message = "Successfully Deleted ",
+                Data = result
+            };
+            return response;
+            }
         }
 
 

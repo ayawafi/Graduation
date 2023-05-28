@@ -10,9 +10,8 @@ namespace Clinic_Core.Managers.Interfaces
 {
     public interface IPatientManager
     {
-        Task<LoginPatientResponse> SignUp(PatientRegistrationModelView PatientReg);
-        ApplicationUser UpdateProfilePatient(string userId, UpdatePatientProfilVM appUser);
-        string CompletePatientProfile(string userId, PatientProfileSettings profileSettings);
-        //LoginPatientResponse SignIn(PatientLoginModelView PatientLogin);
+        Task<ResponseApi> SignUp(PatientRegistrationModelView PatientReg);
+        ResponseApi UpdateProfilePatient(string userId, UpdatePatientProfilVM appUser);
+        ResponseApi CompletePatientProfile(string userId, PatientProfileSettings profileSettings);
     }
 }

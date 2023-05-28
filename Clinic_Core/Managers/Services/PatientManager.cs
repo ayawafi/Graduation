@@ -49,11 +49,17 @@ namespace Clinic_Core.Managers.Services
             };
         }
         #region Public
-        public async Task<LoginPatientResponse> SignUp(PatientRegistrationModelView PatientReg)
+        public async Task<ResponseApi> SignUp(PatientRegistrationModelView PatientReg)
         {
             if (_dbContext.Users.Any(x => x.Email.Equals(PatientReg.Email, StringComparison.InvariantCultureIgnoreCase)))
             {
-                throw new ServiceValidationException("Email already Exist !");
+                var response1 = new ResponseApi
+                {
+                    IsSuccess = false,
+                    Message = "Email already exist",
+                    Data = null
+                };
+                return response1;
             }
 
             var hashedPassword = HashPassword(PatientReg.Password);
@@ -69,16 +75,23 @@ namespace Clinic_Core.Managers.Services
             _dbContext.SaveChanges();
             var jwtSecurityToken = await CreateJwtToken(patient);
 
-            return new LoginPatientResponse
+            var response = new ResponseApi
             {
-                Email = patient.Email,
-                IsValid = true,
-                Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
-                Message = "Login Successfully"
+                IsSuccess = true,
+                Message = "Register Successfully",
+                Data = new
+                {
+                      Email = patient.Email,
+                      FirstName = patient.FirstName,
+                      LastName = patient.LastName,
+                      IsValid = true,
+                      Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
+                }
             };
+            return response;
         }
 
-        public ApplicationUser UpdateProfilePatient(string userId, UpdatePatientProfilVM appUser)
+        public ResponseApi UpdateProfilePatient(string userId, UpdatePatientProfilVM appUser)
         {
             var user = _dbContext.Users.Find(userId);
             if (user == null)
@@ -89,10 +102,17 @@ namespace Clinic_Core.Managers.Services
             _dbContext.SaveChanges();
 
             var userAfterUpdate = _dbContext.Users.Find(userId);
-            return userAfterUpdate;
+            var response1 = new ResponseApi
+            {
+                IsSuccess = true,
+                Message = "Updated Successfully",
+                Data = userAfterUpdate
+            };
+            return response1;
+            
         }
 
-        public string CompletePatientProfile(string userId, PatientProfileSettings profileSettings)
+        public ResponseApi CompletePatientProfile(string userId, PatientProfileSettings profileSettings)
         {
             var user = _dbContext.Users.Find(userId);
             if (user == null)
@@ -100,7 +120,15 @@ namespace Clinic_Core.Managers.Services
             user.DateOfBirth = profileSettings.DateOfBirth;
             user.BloodGroup = profileSettings.BloodGroup;
             user.Address = profileSettings.Address;
-            return "done";
+
+            var response = new ResponseApi
+            {
+                IsSuccess = true,
+                Message = "Success , But Doctor was exist",
+                Data = user
+            };
+            return response;
+           
         }
         #endregion Public 
 

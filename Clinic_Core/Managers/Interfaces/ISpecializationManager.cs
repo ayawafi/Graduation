@@ -11,9 +11,9 @@ namespace Clinic_Core.Managers.Interfaces
     public interface ISpecializationManager
     {
         ResponseApi GetAllSpecialties();
-        SpectalizationModelView CreateSpecialty(SpectalizationModelView specialtyMV);
-        SpectalizationModelView UpdateSpecialty(SpectalizationModelView currentSpecialty);
-        SpectalizationModelView DeleteSpecialty(SpectalizationModelView currentSpecialty);
+        ResponseApi CreateSpecialty(SpectalizationModelView specialtyMV);
+        ResponseApi UpdateSpecialty(SpectalizationModelView currentSpecialty);
+        ResponseApi DeleteSpecialty(SpectalizationModelView currentSpecialty);
         ResponseApi GetSpecialtiesBySpecificNum(int NumberOfSpecialties);
     }
 }

@@ -11,6 +11,9 @@ namespace Clinic_Core.Managers.Interfaces
     public interface IBlogManager
     {
         ResponseApi CreateBlog(string DoctorId, BlogModelView blogVM);
-        ResponseApi GetAllBlogs(); 
+        ResponseApi GetAllBlogs();
+        //ResponseApi GetBlogById(int blogId);
+        //ResponseApi EditBlog();
+        //ResponseApi DeleteBlog();
     }
 }

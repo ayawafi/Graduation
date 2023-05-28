@@ -10,14 +10,14 @@ namespace clinic_Core.Managers.Interfaces
 {
     public interface IDoctorManager
     {
-        Task<LoginPatientResponse> SignUp(DoctorRegistrationModelView DoctorReg);
-        Task<LoginDoctorResponse> SignIn(PatientLoginModelView DoctorLogin);
-        List<ApplicationUser> GetAllPatients();
-        List<Doctor> GetTopDoctors();
-        List<Doctor> GetTopDoctorsBySpecificNumber(int Number);
-        string CompleteDoctorProfile(string DoctorId, UpdateDoctorVM doctor);
-        string UpdateDoctorProfile(string DoctorId, UpdateDoctorVM doctor);
-        List<Doctor> SearchDoctors(string gender, int SpecialtyId);
+        Task<ResponseApi> SignUp(DoctorRegistrationModelView DoctorReg);
+        //Task<ResponseApi> SignIn(PatientLoginModelView DoctorLogin);
+        ResponseApi GetAllPatients();
+        ResponseApi GetTopDoctors();
+        ResponseApi GetTopDoctorsBySpecificNumber(int Number);
+        ResponseApi CompleteDoctorProfile(string DoctorId, CompleteDoctorVM doctor);
+        ResponseApi UpdateDoctorProfile(string DoctorId, UpdateDoctorVM doctor);
+        ResponseApi SearchDoctors(string gender, int SpecialtyId);
 
     }
 }

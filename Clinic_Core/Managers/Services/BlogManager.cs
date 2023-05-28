@@ -58,15 +58,15 @@ namespace Clinic_Core.Managers
 
         public ResponseApi GetAllBlogs()
         {
-            var result = _dbContext.Blogs.Include(y => y.Doctor)
-                            .ThenInclude(z => z.ApplicationUser)
+            var result = _dbContext.Blogs
                             .Select(x => new
                             {
-                                x.Doctor.ApplicationUser.FirstName,
-                                x.Title,
-                                x.Content,
-                                x.CreatedDate,
-                                x.Image
+                                name = x.Doctor.ApplicationUser.FirstName+" "+ x.Doctor.ApplicationUser.LastName,
+                                Title = x.Title,
+                                Content = x.Content,
+                                CreatedDate = x.CreatedDate,
+                                BlogImage = x.Image,
+                                DoctorImage = x.Doctor.ApplicationUser.Image
                             }).ToList();
 
             if (!result.Any())
@@ -91,6 +91,21 @@ namespace Clinic_Core.Managers
 
             }
         }
+
+        //public ResponseApi GetBlogById(int blogId)
+        //{
+            
+        //}
+
+        //public ResponseApi EditBlog(BlogModelView currentblog)
+        //{
+            
+        //}
+
+        //public ResponseApi DeleteBlog()
+        //{
+
+        //}
 
         #region Private
         private string UploadImage(string folder, IFormFile ImgeFile)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
@@ -26,17 +27,19 @@ namespace Clinic_DbModel.Models
         public int? SpecialtyId { get; set; }
         public string ClinicName { get; set; }
         public string ClinicAddress { get; set; }
-        public string Experience { get; set; }
-        public int? ExperienceFrom { get; set; }
-        public int? ExperienceTo { get; set; }
+        public string HospitalName { get; set; }
+        public int? HospitalFrom { get; set; }
+        public int? HospitalTo { get; set; }
+        public string Designation { get; set; }
         public string Awards { get; set; }
         public int? AwardsYear { get; set; }
         public string Registration { get; set; }
         public int? RegistrationYear { get; set; }
         public string Membership { get; set; }
 
-        public string Designation { get; set; }
-        
+
+        [ForeignKey(nameof(UserId))]
+
         public virtual ApplicationUser ApplicationUser { get; set; }
 
         public virtual Specialization Specialty { get; set; }

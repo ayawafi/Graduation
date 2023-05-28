@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
-using Clinic_Common.Extensions;
 using clinic_Core.Managers.Interfaces;
-using Clinic_Core.Managers.Interfaces;
 using Clinic_DbModel.Models;
 using Clinic_ModelView;
 using Microsoft.AspNetCore.Identity;
@@ -17,8 +15,9 @@ using System.Threading.Tasks;
 using Clinic_Core.Helper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
-using System.Net.WebSockets;
-using MySqlX.XDevAPI.Common;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace Clinic_Core.Managers.Services
 {
@@ -30,8 +29,9 @@ namespace Clinic_Core.Managers.Services
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly JWT _jwt;
         private readonly IConfiguration _configuration;
+        private IWebHostEnvironment _host;
 
-        public DoctorManager(clinic_dbContext dbContext, IMapper mapper, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IOptions<JWT> jwt, IConfiguration configuration)
+        public DoctorManager(clinic_dbContext dbContext, IMapper mapper, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IOptions<JWT> jwt, IConfiguration configuration, IWebHostEnvironment host)
         {
             _dbContext = dbContext;
             _mapper = mapper;
@@ -40,6 +40,7 @@ namespace Clinic_Core.Managers.Services
             //_jwt = jwt.Value;
             _configuration = configuration;
             _jwt = Binding();
+            _host = host;
 
         }
         private JWT Binding()
@@ -54,14 +55,19 @@ namespace Clinic_Core.Managers.Services
         }
 
         #region Public
-        public async Task<LoginPatientResponse> SignUp(DoctorRegistrationModelView DoctorReg)
+        public async Task<ResponseApi> SignUp(DoctorRegistrationModelView DoctorReg)
         {
       
                 if (_dbContext.Users.Any(x => x.Email.Equals(DoctorReg.Email, StringComparison.InvariantCultureIgnoreCase)))
                 {
-                    throw new ServiceValidationException("Email already Exist !");
-                }
-
+                    var response = new ResponseApi
+                    {
+                        IsSuccess = true,
+                        Message = "Email already Exist !",
+                        Data = null
+                    };
+                         return response;
+            }
                 var hashedPassword = HashPassword(DoctorReg.Password);
                 var doctor = _dbContext.Users.Add(new ApplicationUser
                 {
@@ -73,23 +79,28 @@ namespace Clinic_Core.Managers.Services
 
                 }).Entity;
 
-
                 _dbContext.SaveChanges();
                 var jwtSecurityToken = await CreateJwtToken(doctor);
-            var token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+                var token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
                 var newDoc = _dbContext.Users.FirstOrDefault(x => x.Email == doctor.Email);
-            return new LoginPatientResponse
-            {
-                Id = newDoc.Id,
-                Email = doctor.Email,
-                IsValid = true,
-                Token = token,
-            Message = "Login Successfully"
-                };
+                var response1 = new ResponseApi
+                 {
+                        IsSuccess = true,
+                        Message = "Register Successfully",
+                        Data = new
+                {
+                          Id = newDoc.Id,
+                          Email = doctor.Email,
+                          IsValid = true,
+                          Token = token,
+                }
+                };  
+                          return response1;
             
-              }
 
-        public async Task<LoginDoctorResponse> SignIn(PatientLoginModelView DoctorLogin)
+        }
+
+        public async Task<ResponseApi> SignIn(PatientLoginModelView DoctorLogin)
         {
             var doctor = _dbContext.Users.FirstOrDefault(x => x.Email
                           .Equals(DoctorLogin.Email,
@@ -97,39 +108,82 @@ namespace Clinic_Core.Managers.Services
 
             if (doctor == null || !VerifyHashPassword(DoctorLogin.Password, doctor.PasswordHash))
             {
-                throw new ServiceValidationException(300, "Invalid Email or password received");
+                var response = new ResponseApi
+                {
+                    IsSuccess = false,
+                    Message = "Invalid Email or password received",
+                    Data = null
+                };
+                return response;
             }
+            else
+            {
             var jwtSecurityToken = await CreateJwtToken(doctor);
             var result = _mapper.Map<LoginDoctorResponse>(doctor);
             result.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
 
-            return result;
+            var response = new ResponseApi
+            {
+                IsSuccess = true,
+                Message = "Login Successfully",
+                Data = result
+            };
+            return response;
+
+            }
         }
 
-        public List<Doctor> GetTopDoctors()
+        public ResponseApi GetTopDoctors()
         {
             var result = _dbContext.Doctors.Include(x => x.ApplicationUser)
                                             .Where(x => x.UserId == x.ApplicationUser.Id).ToList();
-            return result;
+
+            var response = new ResponseApi
+            {
+                IsSuccess = true,
+                Message = "Success",
+                Data = result
+            };
+            return response;
+            
         }
 
-        public List<Doctor> GetTopDoctorsBySpecificNumber(int Number)
+        public ResponseApi GetTopDoctorsBySpecificNumber(int Number)
         {
             var result = _dbContext.Doctors.Include(x => x.ApplicationUser)
                                             .Where(x => x.UserId == x.ApplicationUser.Id).Take(Number).ToList();
-            return result;
+
+            var response = new ResponseApi
+            {
+                IsSuccess = true,
+                Message = "Success , But Doctor was exist",
+                Data = result
+            };
+            return response;
+
         }
 
-        public List<ApplicationUser> GetAllPatients()
+        public ResponseApi GetAllPatients()
         {
-            var result = _dbContext.Users.ToList();
+            var result = _dbContext.Users.Select(a => new
+            {
+                PatientName = a.FirstName +" "+a.LastName,
+                PatientEmail = a.Email,
+                BloodGroup = a.BloodGroup,
+                PatientImage = a.Image
+            }).ToList();
 
-            return result;
+            var response = new ResponseApi
+            {
+                IsSuccess = true,
+                Message = "Success , But Doctor was exist",
+                Data = result
+            };
+            return response;
+
+           
         }
-
-
-
-        public string CompleteDoctorProfile(string DoctorId, UpdateDoctorVM doctor)
+        public ResponseApi CompleteDoctorProfile(string DoctorId, CompleteDoctorVM doctor)
         {
             var doc = new Doctor
             {
@@ -139,9 +193,9 @@ namespace Clinic_Core.Managers.Services
                 Degree = doctor.Degree,
                 College = doctor.College,
                 YearOfCompletion = doctor.YearOfCompletion,
-                Experience= doctor.Experience,
-                ExperienceFrom = doctor.ExperienceFrom,
-                ExperienceTo = doctor.ExperienceTo,
+                HospitalName = doctor.HospitalName,
+                HospitalFrom = doctor.HospitalFrom,
+                HospitalTo = doctor.HospitalTo,
                 Designation = doctor.Designation,
                 Registration = doctor.Registration,
                 RegistrationYear = doctor.RegistrationYear,
@@ -153,43 +207,79 @@ namespace Clinic_Core.Managers.Services
                 AboutMe = doctor.AboutMe,
                 Pricing = doctor.Pricing,
             };
+
+            string folder = "Uploads/DoctorImages";
+            folder = UploadImage(folder, doctor.ImageFile);
+            doctor.Image = folder;
+
             var existDoctor = _dbContext.Doctors.FirstOrDefault(x => x.UserId == DoctorId);
             if (existDoctor != null)
-                return " Doctor was exist";
-
+            {
+                var response1 = new ResponseApi
+                {
+                    IsSuccess = true,
+                    Message = "Success , But Doctor was exist",
+                    Data = existDoctor
+                };
+                return response1;
+            }
 
 
             _dbContext.Doctors.Add(doc);
-            var existUser = _dbContext.Users.FirstOrDefault(x => x.Id == DoctorId);
-            if(existUser == null)
-                return " User doesn't exist";
-            
+            var existUser = _dbContext.Users.FirstOrDefault(x => x.Id == DoctorId);         
+
             existUser.UserName = doctor.UserName;
             existUser.PhoneNumber = doctor.PhoneNumber;
             existUser.DateOfBirth = doctor.DateOfBirth;
             existUser.Image = doctor.Image;
             existUser.Gender = doctor.Gender;
             _dbContext.SaveChanges();
-            return "Profile is Complete";
+
+            var response = new ResponseApi
+            {
+                IsSuccess = true,
+                Message = "Success",
+                Data = existUser
+            };
+            return response;
         }
-       
-        public string UpdateDoctorProfile(string DoctorId, UpdateDoctorVM doctor)
+
+        public ResponseApi UpdateDoctorProfile(string DoctorId, UpdateDoctorVM doctor)
         {
             var user = _dbContext.Users.FirstOrDefault(x => x.Id == DoctorId);
+            string folder = "Uploads/DoctorImages";
+            folder = UploadImage(folder, doctor.ImageFile);
+            doctor.Image = folder;
+
             if (user == null)
-                return "user desen't exist";
+            {
+                var response = new ResponseApi
+                {
+                    IsSuccess = true,
+                    Message = "user desen't exist",
+                    Data = null
+                };
+                return response;
+            }
             user.PhoneNumber = doctor.PhoneNumber;
             user.Image = doctor.Image;
 
             var doc = _dbContext.Doctors.FirstOrDefault(x => x.UserId == DoctorId);
             if (doc == null)
-                return "user desen't exist";
-
+            {
+                var response1 = new ResponseApi
+                {
+                    IsSuccess = true,
+                    Message = "user desen't exist",
+                    Data = null
+                };
+                return response1;
+            }
             doc.ClinicAddress = doctor.ClinicAddress;
             doc.ClinicName = doctor.ClinicName;
-            doc.Experience = doctor.Experience;
-            doc.ExperienceFrom = doctor.ExperienceFrom;
-            doc.ExperienceTo = doctor.ExperienceTo;
+            doc.HospitalName = doctor.HospitalName;
+            doc.HospitalFrom = doctor.HospitalFrom;
+            doc.HospitalTo = doctor.HospitalTo;
             doc.Designation = doctor.Designation;
             doc.Registration = doctor.Registration;
             doc.RegistrationYear = doctor.RegistrationYear;
@@ -199,25 +289,40 @@ namespace Clinic_Core.Managers.Services
             doc.AboutMe = doctor.AboutMe;
             doc.Pricing = doctor.Pricing;
 
-
             _dbContext.SaveChanges();
-
-            return "done";
+            var response2 = new ResponseApi
+            {
+                IsSuccess = true,
+                Message = "Success",
+                Data = doc
+            };
+            return response2;
         }
 
-        public List<Doctor> SearchDoctors(string gender, int specialtyId)
+        public ResponseApi SearchDoctors(string gender, int specialtyId)
         {
-           var result = _dbContext.Doctors
-        .Where(d => d.SpecialtyId == specialtyId)
-        .Join(_dbContext.Users, d => d.UserId, au => au.Id, (d, au) => new { Doctor = d, ApplicationUser = au })
-        .Where(x => x.ApplicationUser.Gender==gender)
-        .Select(x => x.Doctor)
-        .ToList();
+              var result = _dbContext.Doctors
+              .Where(d => d.SpecialtyId == specialtyId)
+              .Join(_dbContext.Users, d => d.UserId, au => au.Id, (d, au) => new { Doctor = d, ApplicationUser = au })
+              .Where(x => x.ApplicationUser.Gender==gender)
+              .Select(x => x.Doctor)
+              .ToList();
 
-            return result;
+            var response = new ResponseApi
+            {
+                IsSuccess = true,
+                Message = "Success",
+                Data = result
+            };
+            return response;
+           
         }
 
         #endregion Public 
+
+
+
+
 
         #region private
         private static string HashPassword(string password)
@@ -307,9 +412,15 @@ namespace Clinic_Core.Managers.Services
                 signingCredentials: signingCredentials);
 
             return jwtSecurityToken;
+        }
 
-
-
+        private string UploadImage(string folder, IFormFile ImgeFile)
+        {
+            folder += Guid.NewGuid().ToString() + "_" + ImgeFile.FileName;
+            string ImageURL = "/" + folder;
+            string serverFolder = Path.Combine(_host.WebRootPath, folder);
+            ImgeFile.CopyTo(new FileStream(serverFolder, FileMode.Create));
+            return ImageURL;
         }
         #endregion private
     }
