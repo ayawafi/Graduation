@@ -24,7 +24,7 @@ namespace Clinic_Core.Managers.Services
         }
         public ResponseApi AddScheduletiming(string DoctorId , ScheduletimingModelView scheduletiming)
         {
-         var uId=   _dbContext.Doctors.FirstOrDefault(x=>x.UserId==DoctorId);
+           var uId =_dbContext.Doctors.FirstOrDefault(x=>x.UserId==DoctorId);
             var newScheduletiming = new ScheduletimingModelView
             {
                 DoctorId = uId.Id,
@@ -40,8 +40,8 @@ namespace Clinic_Core.Managers.Services
             var response = new ResponseApi
             {
                 IsSuccess = true,
-                Message = "Success , But Doctor was exist",
-                Data = model
+                Message = "Success",
+                Data = newScheduletiming
             };
             return response;
            }

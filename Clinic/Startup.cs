@@ -77,7 +77,9 @@ namespace Clinic
                 };
             });
          
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(options =>
+            options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            ); 
             services.AddHttpContextAccessor();
             services.AddSingleton(sp => _mapperConfiguration.CreateMapper());
             services.AddSingleton<IHttpContextAccessor,HttpContextAccessor>();
@@ -131,6 +133,7 @@ namespace Clinic
 
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseStaticFiles();
 
             app.UseEndpoints(endpoints =>
             {

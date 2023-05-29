@@ -91,6 +91,8 @@ namespace Clinic_Core.Managers.Services
                 {
                           Id = newDoc.Id,
                           Email = doctor.Email,
+                          DoctorName = doctor.FirstName+" "+doctor.LastName,
+                          UserType = doctor.UserType,
                           IsValid = true,
                           Token = token,
                 }
@@ -126,7 +128,17 @@ namespace Clinic_Core.Managers.Services
             {
                 IsSuccess = true,
                 Message = "Login Successfully",
-                Data = result
+                Data = new
+                {
+                    Id = doctor.Id,
+                    DoctorName = doctor.FirstName+" "+doctor.LastName,
+                    Email = doctor.Email,
+                    Image = doctor.Image,
+                    UserType = doctor.UserType,
+                    Token = result.Token,
+                    IsValid = true
+
+                }
             };
             return response;
 

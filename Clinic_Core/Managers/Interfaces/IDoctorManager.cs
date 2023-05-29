@@ -11,7 +11,7 @@ namespace clinic_Core.Managers.Interfaces
     public interface IDoctorManager
     {
         Task<ResponseApi> SignUp(DoctorRegistrationModelView DoctorReg);
-        //Task<ResponseApi> SignIn(PatientLoginModelView DoctorLogin);
+        Task<ResponseApi> SignIn(PatientLoginModelView DoctorLogin);
         ResponseApi GetAllPatients();
         ResponseApi GetTopDoctors();
         ResponseApi GetTopDoctorsBySpecificNumber(int Number);

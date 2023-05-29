@@ -34,14 +34,14 @@ namespace Clinic.Controllers
             return Ok(res);
         }
 
-        //[AllowAnonymous]
-        //[Route("api/doctor/SignIn")]
-        //[HttpPost]
-        //public async Task<IActionResult> SignIn([FromForm]PatientLoginModelView DoctorLogin)
-        //{
-        //    var res = await _doctorManager.SignIn(DoctorLogin);
-        //    return Ok(res);
-        //}
+        [AllowAnonymous]
+        [Route("api/doctor/SignIn")]
+        [HttpPost]
+        public async Task<IActionResult> SignIn([FromForm] PatientLoginModelView DoctorLogin)
+        {
+            var res = await _doctorManager.SignIn(DoctorLogin);
+            return Ok(res);
+        }
 
         [Route("api/doctor/GetAllPatients")]
         [HttpGet]

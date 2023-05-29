@@ -84,6 +84,7 @@ namespace Clinic_Core.Managers.Services
                       Email = patient.Email,
                       FirstName = patient.FirstName,
                       LastName = patient.LastName,
+                      UserType = patient.UserType,
                       IsValid = true,
                       Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
                 }
