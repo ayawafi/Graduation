@@ -14,7 +14,7 @@ namespace Clinic_DbModel.Models
         public string Content { get; set; }
         public string Image { get; set; }
         public DateTime CreatedDate { get; set; }
-        public byte? IsDeleted { get; set; }
+        public bool? IsDeleted { get; set; }
 
         public virtual Doctor Doctor { get; set; }
     }

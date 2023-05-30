@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +9,10 @@ namespace Clinic_ModelView
 {
     public class UpdatePatientProfilVM
     {
-        public String Email { get; set; }
-        public String PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; }
+
         public String Address { get; set; }
+        public IFormFile ImageFile { get; set; }
+       // public string Image { get; set; }
     }
 }

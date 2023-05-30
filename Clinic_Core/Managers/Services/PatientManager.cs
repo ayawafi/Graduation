@@ -4,6 +4,8 @@ using Clinic_Core.Helper;
 using Clinic_Core.Managers.Interfaces;
 using Clinic_DbModel.Models;
 using Clinic_ModelView;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -11,7 +13,9 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,9 +30,14 @@ namespace Clinic_Core.Managers.Services
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly JWT _jwt;
         private readonly IConfiguration _configuration;
+        private IWebHostEnvironment _host;
 
 
-        public PatientManager(clinic_dbContext dbContext, IMapper mapper, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IOptions<JWT> jwt, IConfiguration configuration)
+        public PatientManager(clinic_dbContext dbContext, IMapper mapper,
+            UserManager<ApplicationUser> userManager, 
+            SignInManager<ApplicationUser> signInManager,
+            IOptions<JWT> jwt, IConfiguration configuration,
+            IWebHostEnvironment host)
         {
             _dbContext = dbContext;
             _mapper = mapper;
@@ -37,6 +46,7 @@ namespace Clinic_Core.Managers.Services
             //_jwt = jwt.Value;
             _configuration = configuration;
             _jwt = Binding();
+            _host = host;
         }
         private JWT Binding()
         {
@@ -95,41 +105,92 @@ namespace Clinic_Core.Managers.Services
         public ResponseApi UpdateProfilePatient(string userId, UpdatePatientProfilVM appUser)
         {
             var user = _dbContext.Users.Find(userId);
+            string folder = "Uploads/PatientImages";
+            folder = UploadImage(folder, appUser.ImageFile);
+            var Image = folder;
             if (user == null)
-                throw new ServiceValidationException("user not exist");
-            user.Email = appUser.Email;
-            user.PhoneNumber = appUser.PhoneNumber;
-            user.Address = appUser.Address;
-            _dbContext.SaveChanges();
-
-            var userAfterUpdate = _dbContext.Users.Find(userId);
-            var response1 = new ResponseApi
             {
-                IsSuccess = true,
-                Message = "Updated Successfully",
-                Data = userAfterUpdate
-            };
-            return response1;
-            
+                var response = new ResponseApi
+                {
+                    IsSuccess = false,
+                    Message = "user not exist",
+                    Data = null
+                };
+                return response;
+            }else
+            {
+                user.Image = Image;
+                user.PhoneNumber = appUser.PhoneNumber;
+                user.Address = appUser.Address;
+                _dbContext.SaveChanges();
+
+                var userAfterUpdate = _dbContext.Users.Find(userId);
+                var response = new ResponseApi
+                {
+                    IsSuccess = true,
+                    Message = "Updated Successfully",
+                    Data = new
+                    {
+                        PatientName = user.FirstName + " " + user.LastName,
+                        Email = user.Email,
+                        DateOfBirth = userAfterUpdate.DateOfBirth,
+                        BloodGroup = userAfterUpdate.BloodGroup,
+                        Address = userAfterUpdate.Address,
+                        Image = userAfterUpdate.Image,
+                        PhoneNumber = userAfterUpdate.PhoneNumber
+                    }
+                };
+                return response;
+            }
         }
 
         public ResponseApi CompletePatientProfile(string userId, PatientProfileSettings profileSettings)
         {
             var user = _dbContext.Users.Find(userId);
-            if (user == null)
-                throw new ServiceValidationException("user not exist");
-            user.DateOfBirth = profileSettings.DateOfBirth;
-            user.BloodGroup = profileSettings.BloodGroup;
-            user.Address = profileSettings.Address;
+            string folder = "Uploads/PatientImages";
+            folder = UploadImage(folder, profileSettings.ImageFile);
+            profileSettings.Image = folder;
 
-            var response = new ResponseApi
+            if (user == null)
             {
-                IsSuccess = true,
-                Message = "Success , But Doctor was exist",
-                Data = user
-            };
-            return response;
-           
+                var response = new ResponseApi
+                {
+                    IsSuccess = false,
+                    Message = "user not exist",
+                    Data = null
+                };
+                return response;
+
+            } else
+             {
+                user.DateOfBirth = profileSettings.DateOfBirth;
+                user.BloodGroup = profileSettings.BloodGroup;
+                user.Address = profileSettings.Address;
+                user.Image = profileSettings.Image;
+                user.Address = profileSettings.Address;
+                user.PhoneNumber = profileSettings.PhoneNumber;
+                user.UserName = profileSettings.UserName;
+
+                _dbContext.SaveChanges();
+
+                var response = new ResponseApi
+                {
+                    IsSuccess = true,
+                    Message = "Success",
+                    Data = new
+                    {
+                        PatientName = user.FirstName +" "+user.LastName,
+                        Email = user.Email,
+                        DateOfBirth = profileSettings.DateOfBirth,
+                        BloodGroup = profileSettings.BloodGroup,
+                        Address = profileSettings.Address,
+                        Image = profileSettings.Image,
+                        PhoneNumber = profileSettings.PhoneNumber,
+                        UserName = profileSettings.UserName
+            }
+                };
+                return response;
+             }
         }
 
 
@@ -304,9 +365,15 @@ namespace Clinic_Core.Managers.Services
                 signingCredentials: signingCredentials);
 
             return jwtSecurityToken;
+        }
 
-
-
+        private string UploadImage(string folder, IFormFile ImgeFile)
+        {
+            folder += Guid.NewGuid().ToString() + "_" + ImgeFile.FileName;
+            string ImageURL = "/" + folder;
+            string serverFolder = Path.Combine(_host.WebRootPath, folder);
+            ImgeFile.CopyTo(new FileStream(serverFolder, FileMode.Create));
+            return ImageURL;
         }
         #endregion private
     }

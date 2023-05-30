@@ -8,7 +8,7 @@ namespace Clinic_ModelView
 {
     public class SocialMediaUrlModelView
     {
-        public int Id { get; set; }
+    
         public int DoctorId { get; set; }
         public string FacebookUrl { get; set; }
         public string TwitterUrl { get; set; }

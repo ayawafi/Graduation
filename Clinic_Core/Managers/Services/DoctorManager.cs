@@ -148,8 +148,14 @@ namespace Clinic_Core.Managers.Services
         public ResponseApi GetTopDoctors()
         {
             var result = _dbContext.Doctors.Include(x => x.ApplicationUser)
-                                            .Where(x => x.UserId == x.ApplicationUser.Id).ToList();
-
+                                            .Select(x => new
+                                            {
+                                                DoctorImage = x.ApplicationUser.Image,
+                                                DoctorName = x.ApplicationUser.FirstName +" "+x.ApplicationUser.LastName,
+                                                SpecialityName = x.Specialty.SpecialtyName,
+                                                DoctorId = x.Id,
+                                                ClinicAddress = x.ClinicAddress
+                                            }).ToList();
             var response = new ResponseApi
             {
                 IsSuccess = true,
@@ -177,7 +183,7 @@ namespace Clinic_Core.Managers.Services
 
         public ResponseApi GetAllPatients()
         {
-            var result = _dbContext.Users.Select(a => new
+            var result = _dbContext.Users.Where(x => x.UserType == "Patient").Select(a => new
             {
                 PatientName = a.FirstName +" "+a.LastName,
                 PatientEmail = a.Email,
@@ -188,7 +194,7 @@ namespace Clinic_Core.Managers.Services
             var response = new ResponseApi
             {
                 IsSuccess = true,
-                Message = "Success , But Doctor was exist",
+                Message = "Success",
                 Data = result
             };
             return response;
@@ -223,7 +229,6 @@ namespace Clinic_Core.Managers.Services
             string folder = "Uploads/DoctorImages";
             folder = UploadImage(folder, doctor.ImageFile);
             doctor.Image = folder;
-
             var existDoctor = _dbContext.Doctors.FirstOrDefault(x => x.UserId == DoctorId);
             if (existDoctor != null)
             {
@@ -235,8 +240,6 @@ namespace Clinic_Core.Managers.Services
                 };
                 return response1;
             }
-
-
             _dbContext.Doctors.Add(doc);
             var existUser = _dbContext.Users.FirstOrDefault(x => x.Id == DoctorId);         
 
@@ -251,7 +254,33 @@ namespace Clinic_Core.Managers.Services
             {
                 IsSuccess = true,
                 Message = "Success",
-                Data = existUser
+                Data = new
+                {
+                    UserId = DoctorId,
+                    ClinicAddress = doctor.ClinicAddress,
+                    ClinicName = doctor.ClinicName,
+                    Degree = doctor.Degree,
+                    College = doctor.College,
+                    YearOfCompletion = doctor.YearOfCompletion,
+                    HospitalName = doctor.HospitalName,
+                    HospitalFrom = doctor.HospitalFrom,
+                    HospitalTo = doctor.HospitalTo,
+                    Designation = doctor.Designation,
+                    Registration = doctor.Registration,
+                    RegistrationYear = doctor.RegistrationYear,
+                    Membership = doctor.Membership,
+                    Awards = doctor.Awards,
+                    AwardsYear = doctor.AwardsYear,
+                    DoctorServices = doctor.DoctorServices,
+                    SpecialtyName = _dbContext.Specializations.Where(z => z.Id == doctor.SpecialtyId).Select(z => z.SpecialtyName),
+                    AboutMe = doctor.AboutMe,
+                    Pricing = doctor.Pricing,
+                    UserName = doctor.UserName,
+                    PhoneNumber = doctor.PhoneNumber,
+                    DateOfBirth = doctor.DateOfBirth,
+                    Image = doctor.Image,
+                    Gender = doctor.Gender
+        }
             };
             return response;
         }
@@ -313,12 +342,19 @@ namespace Clinic_Core.Managers.Services
 
         public ResponseApi SearchDoctors(string gender, int specialtyId)
         {
-              var result = _dbContext.Doctors
-              .Where(d => d.SpecialtyId == specialtyId)
-              .Join(_dbContext.Users, d => d.UserId, au => au.Id, (d, au) => new { Doctor = d, ApplicationUser = au })
-              .Where(x => x.ApplicationUser.Gender==gender)
-              .Select(x => x.Doctor)
-              .ToList();
+            var result = _dbContext.Doctors
+            .Where(d => d.SpecialtyId == specialtyId)
+            .Join(_dbContext.Users, d => d.UserId, au => au.Id, (d, au) => new { Doctor = d, ApplicationUser = au })
+            .Where(x => x.ApplicationUser.Gender == gender)
+            .Select(x => new
+            {
+                DoctorImage = x.ApplicationUser.Image,
+                DoctorName = x.ApplicationUser.FirstName + " " + x.ApplicationUser.LastName,
+                SpecialityName = x.Doctor.Specialty.SpecialtyName,
+                IdDoctor = x.Doctor.Id,
+                ClinicAddress = x.Doctor.ClinicAddress,
+                Degree = x.Doctor.Degree
+            }).ToList();
 
             var response = new ResponseApi
             {

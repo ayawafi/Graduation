@@ -51,7 +51,7 @@ namespace Clinic.Controllers
             return Ok(result);
 
         }
-
+        
         [Route("api/doctor/GetTopDoctors")]
         [HttpGet]
         public IActionResult GetTopDoctors()

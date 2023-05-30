@@ -15,6 +15,6 @@ namespace Clinic_ModelView
         public string Content { get; set; }
         public string Image { get; set; }
         public IFormFile ImageFile { get; set; }
-        public DateTime? CreatedDate { get; set; }
+        
     }
 }
