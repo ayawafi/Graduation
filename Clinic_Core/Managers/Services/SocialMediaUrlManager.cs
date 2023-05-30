@@ -5,6 +5,7 @@ using Clinic_ModelView;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,7 +20,7 @@ namespace Clinic_Core.Managers.Services
             _dbContext = dbContext;
             _mapper = mapper;
         }
-
+        
         public ResponseApi AddSocialMediaURL(string doctorId, SocialMediaUrlModelView urlVM)
         {
             var docId = _dbContext.Doctors.FirstOrDefault(b => b.UserId == doctorId);
@@ -35,13 +36,22 @@ namespace Clinic_Core.Managers.Services
             };
 
             _dbContext.Socialmediaurls.Add(url);
-
             _dbContext.SaveChanges();
+            var result = _mapper.Map<SocialMediaUrlModelView>(url);
             var response = new ResponseApi
             {
                 IsSuccess = true,
                 Message = "Added Successfully",
-                Data = url
+                Data = new
+                {
+                    DoctorId = docId.Id,
+                    FacebookUrl = urlVM.FacebookUrl,
+                    TwitterUrl = urlVM.TwitterUrl,
+                    InstagramUrl = urlVM.InstagramUrl,
+                    LinkedInUrl = urlVM.LinkedInUrl,
+                    WebsiteUrl = urlVM.WebsiteUrl,
+
+                }
             };
             return response;
         }
