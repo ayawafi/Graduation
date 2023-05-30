@@ -13,5 +13,8 @@ namespace Clinic_Core.Managers.Interfaces
         Task<ResponseApi> SignUp(PatientRegistrationModelView PatientReg);
         ResponseApi UpdateProfilePatient(string userId, UpdatePatientProfilVM appUser);
         ResponseApi CompletePatientProfile(string userId, PatientProfileSettings profileSettings);
+        ResponseApi FavouritesDoctor(string userId, int doctorId);
+        ResponseApi GetFavouritesDoctor(string userId);
+        ResponseApi DeleteFavouriteDoctor(string userId, int doctorId);
     }
 }

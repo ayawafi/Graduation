@@ -131,6 +131,91 @@ namespace Clinic_Core.Managers.Services
             return response;
            
         }
+
+
+        public ResponseApi FavouritesDoctor(string userId, int doctorId)
+        {
+            var favDoc = new FavDoctors
+            {
+                ApplicationUserId = userId,
+                DoctorId = doctorId
+            };
+
+            _dbContext.FavDoctors.Add(favDoc);
+            _dbContext.SaveChanges();
+
+            var response = new ResponseApi
+            {
+                IsSuccess = true,
+                Message = "Success",
+                Data = favDoc
+            };
+            return response;
+        }
+
+        public ResponseApi GetFavouritesDoctor(string userId)
+        {
+            var result = _dbContext.FavDoctors.Where(x => x.ApplicationUserId == userId).Select(z => new
+            {
+                DoctorId = z.DoctorId,
+                DoctorName = z.ApplicationUser.FirstName + " " + z.ApplicationUser.LastName,
+                DoctorImage = z.ApplicationUser.Image,
+                DoctorSpecialty = z.Dcotor.Specialty.SpecialtyName
+            }).ToList();
+            if (result.Any())
+            {
+                var response = new ResponseApi
+                {
+                    IsSuccess = true,
+                    Message = "Success",
+                    Data = result
+                };
+                return response;
+            }
+            else
+            {
+                var response = new ResponseApi
+                {
+                    IsSuccess = false,
+                    Message = "No Data",
+                    Data = null
+                };
+                return response;
+            }
+            
+        }
+
+
+        public ResponseApi DeleteFavouriteDoctor(string userId, int doctorId)
+        {
+            var result = _dbContext.FavDoctors
+                                   .FirstOrDefault(x => x.DoctorId == doctorId 
+                                    && x.ApplicationUserId == userId);
+            if(result == null)
+            {
+                var response = new ResponseApi
+                {
+                    IsSuccess = false,
+                    Message = "No Data",
+                    Data = null
+                };
+                return response;
+            }
+            else
+            {
+                var response = new ResponseApi
+                {
+                    IsSuccess = true,
+                    Message = "Successfully Deleted!",
+                    Data = null
+                };
+                _dbContext.FavDoctors.Remove(result);
+                _dbContext.SaveChanges();
+                return response;
+            }
+            
+        }
+
         #endregion Public 
 
         #region private

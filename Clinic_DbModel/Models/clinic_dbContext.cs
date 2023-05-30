@@ -27,13 +27,19 @@ namespace Clinic_DbModel.Models
         public virtual DbSet<Scheduletiming> Scheduletimings { get; set; }
         public virtual DbSet<Socialmediaurl> Socialmediaurls { get; set; }
         public virtual DbSet<Specialization> Specializations { get; set; }
+        public virtual DbSet<FavDoctors> FavDoctors { get; set; }
 
-   
+
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<IdentityUserLogin<string>>().HasNoKey();
             modelBuilder.Entity<IdentityUserRole<string>>().HasNoKey();
             modelBuilder.Entity<IdentityUserToken<string>>().HasNoKey();
+
+
+            modelBuilder.Entity<FavDoctors>().HasKey(s => new {s.DoctorId, s.ApplicationUserId }); 
 
 
             modelBuilder.Entity<Appointment>(entity =>

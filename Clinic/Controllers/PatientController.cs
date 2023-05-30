@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Clinic.Controllers
 {
-    
+   
     [ApiController]
     public class PatientController : BaseController
     {
@@ -43,14 +43,32 @@ namespace Clinic.Controllers
             var result = _patientManager.UpdateProfilePatient(_DoctorId, appUser);
             return Ok(result);
         }
+        [Authorize]
+        [Route("api/Patient/FavouritesDoctor")]
+        [HttpPost]
+        public IActionResult FavouritesDoctor(int doctorId)
+        {
+            var res = _patientManager.FavouritesDoctor(_DoctorId, doctorId);
+            return Ok(res);
+        }
 
-        //[Route("api/Patient/SignIn")]
-        //[HttpPost]
-        //public IActionResult SignIn(PatientLoginModelView patientLogin)
-        //{
-        //    var res = _patientManager.SignIn(patientLogin);
-        //    return Ok(res);
-        //}
+        [Authorize]
+        [Route("api/Patient/GetFavouritesDoctor")]
+        [HttpGet]
+        public IActionResult GetFavouritesDoctor()
+        {
+            var res = _patientManager.GetFavouritesDoctor(_DoctorId);
+            return Ok(res);
+        }
+
+        [Authorize]
+        [Route("api/Patient/DeleteFavouriteDoctor")]
+        [HttpDelete]
+        public IActionResult DeleteFavouriteDoctor(int doctorId)
+        {
+            var res = _patientManager.DeleteFavouriteDoctor(_DoctorId, doctorId);
+            return Ok(res);
+        }
 
     }
 }
