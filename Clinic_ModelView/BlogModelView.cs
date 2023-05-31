@@ -10,7 +10,6 @@ namespace Clinic_ModelView
     public class BlogModelView
     {
        
-        public string DoctorId { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
         public string Image { get; set; }

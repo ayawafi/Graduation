@@ -14,6 +14,7 @@ namespace Clinic_DbModel.Models
         public string Day { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
+        public bool Status { get; set; }
 
         [NotMapped]
         public string StTime { get { return StartTime.ToString("hh:mm tt"); } }

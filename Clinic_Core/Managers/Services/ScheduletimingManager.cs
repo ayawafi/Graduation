@@ -16,52 +16,85 @@ namespace Clinic_Core.Managers.Services
     {
         private clinic_dbContext _dbContext;
         private IMapper _mapper;
+        private IAppointmentManager _appointmentManager;
 
-        public ScheduletimingManager(clinic_dbContext dbContext, IMapper mapper)
+        public ScheduletimingManager(clinic_dbContext dbContext, IMapper mapper, IAppointmentManager appointmentManager)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _appointmentManager = appointmentManager;
         }
         public ResponseApi AddScheduletiming(string DoctorId , ScheduletimingModelView scheduletiming)
         {
-           var uId =_dbContext.Doctors.FirstOrDefault(x=>x.UserId==DoctorId);
-            var newScheduletiming = new ScheduletimingModelView
+           var uId =_dbContext.Doctors.FirstOrDefault(x=>x.UserId == DoctorId);
+            if(uId == null)
             {
-                DoctorId = uId.Id,
-                Day = scheduletiming.Day,
-                StartTime = scheduletiming.StartTime,
-                EndTime = scheduletiming.EndTime,
-                DurationTime = scheduletiming.DurationTime,
-            };
-            var model = _mapper.Map<Scheduletiming>(newScheduletiming);
-            _dbContext.Scheduletimings.Add(model);
-            _dbContext.SaveChanges();
+                var response = new ResponseApi
+                {
+                    IsSuccess = false,
+                    Message = "There is no schedule ",
+                    Data = null
+                };
+                return response;
+            }
+            else
+            {
+                var newScheduletiming = new ScheduletimingModelView
+                {
+                    DoctorId = uId.Id,
+                    Day = scheduletiming.Day,
+                    StartTime = scheduletiming.StartTime,
+                    EndTime = scheduletiming.EndTime,
+                    DurationTime = scheduletiming.DurationTime,
+                };
+                var model = _mapper.Map<Scheduletiming>(newScheduletiming);
+                _dbContext.Scheduletimings.Add(model);
+                _dbContext.SaveChanges();
 
-            var response = new ResponseApi
-            {
-                IsSuccess = true,
-                Message = "Success",
-                Data = newScheduletiming
-            };
-            return response;
+                var response = new ResponseApi
+                {
+                    IsSuccess = true,
+                    Message = "Success",
+                    Data = newScheduletiming
+                };
+                return response;
+            }
+           
            }
 
         //هاي لعرض Doctor Profile/Business Hours
         public ResponseApi GetBusinessHoursForDoctor(string DoctorId)
         {
             var uId = _dbContext.Doctors.FirstOrDefault(x => x.UserId == DoctorId);
-            var result = _dbContext.Scheduletimings.Where(x => x.DoctorId == uId.Id)
-                                                    .Select(z => new ScheduletimingVM { 
-                                                        Day = z.Day,
-                                                        AvailableTime =z.StartTime.ToString("hh:mm tt") + "-" + z.EndTime.ToString("hh:mm tt") })
-                                                    .ToList();
-            var response = new ResponseApi
+            if (uId == null)
             {
-                IsSuccess = true,
-                Message = "Success",
-                Data = result
-            };
-            return response;
+                var response = new ResponseApi
+                {
+                    IsSuccess = false,
+                    Message = "There is no business hours ",
+                    Data = null
+                };
+                return response;
+            }
+            else
+            {
+                var result = _dbContext.Scheduletimings.Where(x => x.DoctorId == uId.Id)
+                                                    .Select(z => new ScheduletimingVM
+                                                    {
+                                                        Day = z.Day,
+                                                        AvailableTime = z.StartTime.ToString("hh:mm tt") + "-" + z.EndTime.ToString("hh:mm tt")
+                                                    })
+                                                    .ToList();
+                var response = new ResponseApi
+                {
+                    IsSuccess = true,
+                    Message = "Success",
+                    Data = result
+                };
+                return response;
+            }
+
+            
             
         }
       
@@ -69,8 +102,14 @@ namespace Clinic_Core.Managers.Services
         {
             var uId = _dbContext.Doctors.FirstOrDefault(x => x.UserId == doctorId);
             var workHours = _dbContext.Scheduletimings.Where(z => z.DoctorId == uId.Id)
-                                                        .FirstOrDefault(x => x.Day == day); 
-
+          .FirstOrDefault(x => x.Day == day); 
+              //.Select(c => new
+              // {
+              //     Day = c.Day,
+              //     Date = c.StartTime.Date,
+              //     Time = c.StTime + "-" + c.EnTime,
+              //     Status = c.Status
+              // })
             if (workHours == null)
             {
                 var response = new ResponseApi
@@ -86,8 +125,10 @@ namespace Clinic_Core.Managers.Services
                 DateTime startTime = workHours.StartTime;
                 DateTime finishTime = workHours.EndTime;
                 TimeSpan durationTime = TimeSpan.FromMinutes(workHours.DurationTime);
+                DateTime date =  workHours.StartTime.Date;
+                var dId = workHours.DoctorId;
 
-                List<string> timeIntervals = GenerateTimeIntervals(startTime, finishTime, durationTime);
+                List<(string TimeOfAppointment, int IsBooked)> timeIntervals = GenerateTimeIntervals(startTime, finishTime, durationTime, date, dId);
 
                 var response = new ResponseApi
                 {
@@ -100,18 +141,24 @@ namespace Clinic_Core.Managers.Services
 
             
         }
-        private List<string> GenerateTimeIntervals(DateTime start, DateTime finish, TimeSpan timeDuration)
+        private List<(string TimeOfAppointment, int IsBooked)> GenerateTimeIntervals(DateTime start, DateTime finish, TimeSpan timeDuration, DateTime date, int dId)
         {
-            List<string> timeIntervals = new List<string>();
+            _appointmentManager.BookedAppointments(dId, date);
+
+            List<(string TimeOfAppointment, int IsBooked)> timeIntervals = new List<(string TimeOfAppointment, int IsBooked)>();
 
             for (DateTime current = start; current.Add(timeDuration) <= finish; current = current.Add(timeDuration))
             {
                 string timeInterval = current.ToString("h:mm tt") + " - " + current.Add(timeDuration).ToString("h:mm tt");
-                timeIntervals.Add(timeInterval);
+
+                bool isBooked = _dbContext.Appointments.Any(c => c.StartTime == current && c.EndTime == current.Add(timeDuration));
+                int bookingStatus = isBooked ? 1 : 0;
+
+                timeIntervals.Add((timeInterval, bookingStatus));
             }
 
             return timeIntervals;
-
         }
+
     }
 }

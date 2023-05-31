@@ -4,12 +4,14 @@ using Clinic_ModelView;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 
 namespace Clinic.Controllers
 {
-    [ApiController]
     [Authorize]
+    [ApiController]
+    
     public class ScheduletimingController : BaseController
     {
         private IScheduletimingManager _scheduletimingManager;
@@ -23,10 +25,24 @@ namespace Clinic.Controllers
         [HttpPost]
         public IActionResult AddScheduletiming(ScheduletimingModelView scheduletiming)
         {
+            try
+            {
+                var time = _scheduletimingManager.AddScheduletiming(_DoctorId, scheduletiming);
+                return Ok(time);
+
+            }
+            catch(Exception ex)
+            {
+                return Ok(new ResponseApi
+                {
+                    IsSuccess = false,
+                    Message = ex.Message,
+                    Data = null
+                });
+               
+            }
             
             
-            var time = _scheduletimingManager.AddScheduletiming(_DoctorId, scheduletiming);
-            return Ok(time);
         }
 
         [Route("api/scheduletiming/getBusinessHoursForDoctor")]
