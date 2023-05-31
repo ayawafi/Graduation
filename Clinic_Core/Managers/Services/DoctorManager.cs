@@ -434,12 +434,10 @@ namespace Clinic_Core.Managers.Services
 
             var claims = new[]
             {
-                //new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
                 new Claim("FirstName", user.FirstName),
                 new Claim("LastName", user.LastName),
                 new Claim("DoctorId", user.Id),
                 new Claim("UserType", user.UserType),
-                //new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim("uid", user.Id)
             }
