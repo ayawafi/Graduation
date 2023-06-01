@@ -70,5 +70,14 @@ namespace Clinic.Controllers
             return Ok(res);
         }
 
+        [Authorize]
+        [Route("api/Patient/GetMyAppointment")]
+        [HttpGet]
+        public IActionResult GetMyAppointment()
+        {
+            var res = _patientManager.GetMyAppointment(_DoctorId);
+            return Ok(res);
+        }
+
     }
 }

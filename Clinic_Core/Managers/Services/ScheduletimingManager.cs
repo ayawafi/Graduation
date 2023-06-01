@@ -63,9 +63,9 @@ namespace Clinic_Core.Managers.Services
            }
 
         //هاي لعرض Doctor Profile/Business Hours
-        public ResponseApi GetBusinessHoursForDoctor(string DoctorId)
+        public ResponseApi GetBusinessHoursForDoctor(int DoctorId)
         {
-            var uId = _dbContext.Doctors.FirstOrDefault(x => x.UserId == DoctorId);
+            var uId = _dbContext.Doctors.FirstOrDefault(x => x.Id == DoctorId);
             if (uId == null)
             {
                 var response = new ResponseApi
@@ -81,6 +81,7 @@ namespace Clinic_Core.Managers.Services
                 var result = _dbContext.Scheduletimings.Where(x => x.DoctorId == uId.Id)
                                                     .Select(z => new ScheduletimingVM
                                                     {
+                                                        DoctorId = uId.Id,
                                                         Day = z.Day,
                                                         AvailableTime = z.StartTime.ToString("hh:mm tt") + "-" + z.EndTime.ToString("hh:mm tt")
                                                     })
@@ -98,18 +99,11 @@ namespace Clinic_Core.Managers.Services
             
         }
       
-        public ResponseApi GetScheduletimingsForDoctor(string doctorId,string day )
+        public ResponseApi GetScheduletimingsForDoctor(int doctorId,string day )
         {
-            var uId = _dbContext.Doctors.FirstOrDefault(x => x.UserId == doctorId);
+            var uId = _dbContext.Doctors.FirstOrDefault(x => x.Id == doctorId);
             var workHours = _dbContext.Scheduletimings.Where(z => z.DoctorId == uId.Id)
-          .FirstOrDefault(x => x.Day == day); 
-              //.Select(c => new
-              // {
-              //     Day = c.Day,
-              //     Date = c.StartTime.Date,
-              //     Time = c.StTime + "-" + c.EnTime,
-              //     Status = c.Status
-              // })
+            .FirstOrDefault(x => x.Day == day); 
             if (workHours == null)
             {
                 var response = new ResponseApi

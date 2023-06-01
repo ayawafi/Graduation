@@ -43,6 +43,14 @@ namespace Clinic.Controllers
             return Ok(res);
         }
 
+        [Route("api/doctor/changepassword")]
+        [HttpPut]
+        public IActionResult ChangePassword([FromForm] ChangePasswordViewModel changePasswordVM)
+        {
+            var result = _doctorManager.ChangePassword(_DoctorId, changePasswordVM);
+            return Ok(result);
+        }
+
         [Route("api/doctor/GetAllPatients")]
         [HttpGet]
         public IActionResult GetAllPatients()
@@ -82,7 +90,7 @@ namespace Clinic.Controllers
             var result = _doctorManager.UpdateDoctorProfile(_DoctorId, doctor);
             return Ok(result);
         }
-        [AllowAnonymous]
+        
         [Route("api/doctor/SearchDoctors")]
         [HttpGet]
         public IActionResult SearchDoctors(string gender, int Specialty)
@@ -91,6 +99,23 @@ namespace Clinic.Controllers
             return Ok(result);
         }
 
+        
+        [Route("api/doctor/GetMyPatientAppointment")]
+        [HttpGet]
+        public IActionResult GetMyPatientAppointment()
+        {
+            var result = _doctorManager.GetMyPatientAppointment(_DoctorId);
+            return Ok(result);
+        }
+
+        [Route("api/doctor/GetMyPatient")]
+        [HttpGet]
+        public IActionResult GetMyPatient()
+        {
+            var result = _doctorManager.GetMyPatient(_DoctorId);
+            return Ok(result);
+        }
+        
 
     }
 }

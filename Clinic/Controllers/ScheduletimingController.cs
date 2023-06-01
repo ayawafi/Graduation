@@ -23,7 +23,7 @@ namespace Clinic.Controllers
         }
         [Route("api/scheduletiming/addscheduletiming")]
         [HttpPost]
-        public IActionResult AddScheduletiming(ScheduletimingModelView scheduletiming)
+        public IActionResult AddScheduletiming([FromForm]ScheduletimingModelView scheduletiming)
         {
             try
             {
@@ -47,17 +47,17 @@ namespace Clinic.Controllers
 
         [Route("api/scheduletiming/getBusinessHoursForDoctor")]
         [HttpGet]
-        public IActionResult GetBusinessHoursForDoctor()
+        public IActionResult GetBusinessHoursForDoctor(int doctorId)
         {
             var d = _DoctorId;
-            var result = _scheduletimingManager.GetBusinessHoursForDoctor(_DoctorId);
+            var result = _scheduletimingManager.GetBusinessHoursForDoctor(doctorId);
             return Ok(result);
         }
         [Route("api/scheduletiming/getScheduletimingsForDoctor")]
         [HttpGet]
-        public IActionResult GetScheduletimingsForDoctor( string day)
+        public IActionResult GetScheduletimingsForDoctor(string day, int doctorId)
         {
-            var result = _scheduletimingManager.GetScheduletimingsForDoctor(_DoctorId, day);
+            var result = _scheduletimingManager.GetScheduletimingsForDoctor(doctorId,day);
             return Ok(result);
         }
     }

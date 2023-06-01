@@ -18,6 +18,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using System.Numerics;
 
 namespace Clinic_Core.Managers.Services
 {
@@ -185,6 +186,7 @@ namespace Clinic_Core.Managers.Services
         {
             var result = _dbContext.Users.Where(x => x.UserType == "Patient").Select(a => new
             {
+                
                 PatientName = a.FirstName +" "+a.LastName,
                 PatientEmail = a.Email,
                 BloodGroup = a.BloodGroup,
@@ -366,6 +368,124 @@ namespace Clinic_Core.Managers.Services
            
         }
 
+        public ResponseApi GetMyPatientAppointment(string userId)
+        {
+            var doctor = _dbContext.Doctors.FirstOrDefault(d => d.UserId == userId);
+            var appointments = _dbContext.Appointments.Where(d => d.DoctorId == doctor.Id).OrderBy(b => b.Date)
+                .Select(x => new
+                {
+                    PatientName = x.ApplicationUser.FirstName + " " + x.ApplicationUser.LastName,
+                    PatientImage = x.ApplicationUser.Image,
+                    Address = x.ApplicationUser.Address,
+                    Email = x.ApplicationUser.Email,
+                    Day = x.Day,
+                    Time = x.StartTime.ToString("hh:mm tt") + "-" + x.EndTime.ToString("hh:mm tt"),
+                    Date = x.Date.ToString("yyyy-MM-dd"),
+                    Status = x.Status
+                }).ToList();
+
+            if (!appointments.Any())
+            {
+                var response = new ResponseApi
+                {
+                    IsSuccess = false,
+                    Message = "You don't have any patient appointment",
+                    Data = null
+                };
+                return response;
+            }
+            else
+            {
+                var response = new ResponseApi
+                {
+                    IsSuccess = true,
+                    Message = "Success",
+                    Data = appointments
+                };
+                return response;
+            }
+        }
+
+        public ResponseApi GetMyPatient(string userId)
+        {
+            var doctor = _dbContext.Doctors.FirstOrDefault(d => d.UserId == userId);
+            var appointments = _dbContext.Appointments.Where(d => d.DoctorId == doctor.Id).OrderBy(b => b.Date)
+                .Select(x => new
+                {
+                    PatientName = x.ApplicationUser.FirstName + " " + x.ApplicationUser.LastName,
+                    PatientImage = x.ApplicationUser.Image,
+                    Address = x.ApplicationUser.Address,
+                    Email = x.ApplicationUser.Email,
+                    BloodGroup = x.ApplicationUser.BloodGroup
+                    }).ToList();
+
+            if (!appointments.Any())
+            {
+                var response = new ResponseApi
+                {
+                    IsSuccess = false,
+                    Message = "You don't have any patient",
+                    Data = null
+                };
+                return response;
+            }
+            else
+            {
+                var response = new ResponseApi
+                {
+                    IsSuccess = true,
+                    Message = "Success",
+                    Data = appointments
+                };
+                return response;
+            }
+        }
+
+        public ResponseApi ChangePassword(string userId, ChangePasswordViewModel changePasswordVM)
+        {
+            var user = _dbContext.Users.FirstOrDefault(x => x.Id == userId);
+            
+            if(changePasswordVM == null || !VerifyHashPassword(changePasswordVM.OldPassword, user.PasswordHash))
+            {
+                var response = new ResponseApi
+                {
+                    IsSuccess = false,
+                    Message = "Your Old Password is incorrect",
+                    Data = null
+                };
+                return response;
+            }
+            else
+            {
+                if(changePasswordVM.NewPassword != changePasswordVM.ConfirmNewPassword)
+                {
+                    var response = new ResponseApi
+                    {
+                        IsSuccess = false,
+                        Message = "The new password and confirmation of the new password don't match ",
+                        Data = null
+                    };
+                    return response;
+                }
+                else
+                {
+                   
+                    var hashedNewPassword = HashPassword(changePasswordVM.NewPassword);
+                    user.PasswordHash = hashedNewPassword;
+                    _dbContext.SaveChanges();
+                    var response = new ResponseApi
+                    {
+                        IsSuccess = true,
+                        Message = "The Password has been Changed Successfully",
+                        Data = null
+                    };
+                    return response;
+                }
+               
+            }
+
+
+        }
         #endregion Public 
 
 

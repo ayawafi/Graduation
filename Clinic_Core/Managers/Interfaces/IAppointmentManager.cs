@@ -11,6 +11,6 @@ namespace Clinic_Core.Managers.Interfaces
     public interface IAppointmentManager 
     {
         List<Appointment> BookedAppointments(int doctorId, DateTime date);
-        string CreateAppointments(string patientId, AppointmentModelView appointment);
+        ResponseApi CreateAppointments(string patientId, AppointmentModelView appointment);
     }
 }

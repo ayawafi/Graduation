@@ -5,8 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Clinic_Core.Managers
 {
@@ -23,12 +21,13 @@ namespace Clinic_Core.Managers
             
             var bookedAppointments = _dbContext.Appointments.Where(x => x.DoctorId == doctorId
                                                                    &&  x.Date.Date == date.Date).ToList();
-
+            
             return bookedAppointments;
         }
 
-        public string CreateAppointments(string patientId, AppointmentModelView appointment)
+        public ResponseApi CreateAppointments(string patientId, AppointmentModelView appointment)
         {
+
             var newAppointment = new Appointment
             {
                 UserId = patientId,
@@ -36,12 +35,39 @@ namespace Clinic_Core.Managers
                 Date = appointment.Date,
                 StartTime = appointment.StartTime,
                 EndTime = appointment.EndTime,
-                Day= appointment.Day
+                Day = appointment.Day
             };
 
             _dbContext.Appointments.Add(newAppointment);
             _dbContext.SaveChanges();
-            return "done";
+
+            var doc = _dbContext.Doctors.Where(x => x.Id == appointment.DoctorId)
+                .Select(doc => new
+                {
+
+                    DoctorId = doc.Id,
+                    DoctorName = doc.ApplicationUser.FirstName + " " + doc.ApplicationUser.LastName,
+                    DoctorImage = doc.ApplicationUser.Image,
+                    DoctorSpeciality = doc.Specialty.SpecialtyName,
+                    Day = appointment.Day,
+                    Date = appointment.Date,
+                    StartTime = appointment.StartTime,
+                    EndTime = appointment.EndTime,
+                    Status = appointment.Status
+                })
+                .AsSingleQuery()
+                .AsNoTracking()
+                .FirstOrDefault();
+
+            var response = new ResponseApi
+            {
+
+                IsSuccess = true,
+                Message = "Successfully Created Appointment",
+                Data = doc
+            };
+            return response;
+           
         }
 
 

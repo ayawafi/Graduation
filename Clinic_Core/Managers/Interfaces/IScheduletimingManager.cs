@@ -6,8 +6,8 @@ namespace Clinic_Core.Managers.Interfaces
     public interface IScheduletimingManager
     {
         ResponseApi AddScheduletiming(string DoctorId, ScheduletimingModelView scheduletiming);
-        ResponseApi GetBusinessHoursForDoctor(string DoctorId);
-        ResponseApi GetScheduletimingsForDoctor(string doctorId, string day);
+        ResponseApi GetBusinessHoursForDoctor(int DoctorId);
+        ResponseApi GetScheduletimingsForDoctor(int doctorId, string day);
 
     }
 }

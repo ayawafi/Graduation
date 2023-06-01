@@ -13,6 +13,8 @@ namespace Clinic_ModelView
 
         public String Address { get; set; }
         public IFormFile ImageFile { get; set; }
-       // public string Image { get; set; }
+
+        public string Gender { get; set; }
+        // public string Image { get; set; }
     }
 }

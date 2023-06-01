@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System;
+using Clinic_Core.Managers.Services;
 
 namespace Clinic.Controllers
 {
@@ -23,10 +24,24 @@ namespace Clinic.Controllers
         }
         [Route("api/appoitment/CreateAppointments")]
         [HttpPost]
-        public IActionResult CreateAppointments(AppointmentModelView appointment)
+        public IActionResult CreateAppointments([FromForm]AppointmentModelView appointment)
         {
-            var result = _appointmentManager.CreateAppointments(_DoctorId, appointment);
-            return Ok(result);
+            try
+            {
+                var result = _appointmentManager.CreateAppointments(_DoctorId, appointment);
+                return Ok(result);
+            }
+     
+            catch (Exception ex)
+            {
+                return Ok(new ResponseApi
+                {
+                    IsSuccess = false,
+                    Message = ex.Message,
+                    Data = null
+                });
+
+            }
         }
         [Route("api/appoitment/BookedAppointments")]
         [HttpGet]

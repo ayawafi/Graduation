@@ -48,16 +48,7 @@ namespace Clinic_Core.Managers.Services
             _jwt = Binding();
             _host = host;
         }
-        private JWT Binding()
-        {
-            return new JWT
-            {
-                Audience = _configuration["JWTOken:Audience"],
-                Issuer = _configuration["JWTOken:Issuer"],
-                Key = _configuration["JWTOken:Key"],
-                DurationInDays = int.TryParse(_configuration["JWTOken:DurationInDays"], out var result) ? result : 0
-            };
-        }
+        
         #region Public
         public async Task<ResponseApi> SignUp(PatientRegistrationModelView PatientReg)
         {
@@ -122,6 +113,7 @@ namespace Clinic_Core.Managers.Services
                 user.Image = Image;
                 user.PhoneNumber = appUser.PhoneNumber;
                 user.Address = appUser.Address;
+                user.Gender = appUser.Gender;
                 _dbContext.SaveChanges();
 
                 var userAfterUpdate = _dbContext.Users.Find(userId);
@@ -136,8 +128,7 @@ namespace Clinic_Core.Managers.Services
                         DateOfBirth = userAfterUpdate.DateOfBirth,
                         BloodGroup = userAfterUpdate.BloodGroup,
                         Address = userAfterUpdate.Address,
-                        Image = userAfterUpdate.Image,
-                        PhoneNumber = userAfterUpdate.PhoneNumber
+                        Image = userAfterUpdate.Image
                     }
                 };
                 return response;
@@ -165,11 +156,9 @@ namespace Clinic_Core.Managers.Services
              {
                 user.DateOfBirth = profileSettings.DateOfBirth;
                 user.BloodGroup = profileSettings.BloodGroup;
-                user.Address = profileSettings.Address;
                 user.Image = profileSettings.Image;
                 user.Address = profileSettings.Address;
-                user.PhoneNumber = profileSettings.PhoneNumber;
-                user.UserName = profileSettings.UserName;
+              user.UserName = profileSettings.UserName;
 
                 _dbContext.SaveChanges();
 
@@ -185,7 +174,6 @@ namespace Clinic_Core.Managers.Services
                         BloodGroup = profileSettings.BloodGroup,
                         Address = profileSettings.Address,
                         Image = profileSettings.Image,
-                        PhoneNumber = profileSettings.PhoneNumber,
                         UserName = profileSettings.UserName
             }
                 };
@@ -275,6 +263,44 @@ namespace Clinic_Core.Managers.Services
                 return response;
             }
             
+        }
+
+        public ResponseApi GetMyAppointment(string userId)
+        {
+            var appointments = _dbContext.Appointments.Where(x => x.UserId == userId)
+                                        .Select(x => new
+                                        {
+                                            AppointmentId = x.Id,
+                                            DoctorName = x.Doctor.ApplicationUser.FirstName + " " + x.Doctor.ApplicationUser.LastName,
+                                            DoctorId = x.Doctor.ApplicationUser.Id,
+                                            DoctorSpecialty = x.Doctor.Specialty.SpecialtyName,
+                                            DoctorImage = x.Doctor.ApplicationUser.Image,
+                                            Day = x.Day,
+                                            Date = x.Date.ToString("yyyy-MM-dd"),
+                                            Time = x.StartTime.ToString("hh:mm tt")+"-"+ x.EndTime.ToString("hh:mm tt"),
+                                            Status = x.Status
+
+                                        }).ToList();
+            if (!appointments.Any())
+            {
+                var response = new ResponseApi
+                {
+                    IsSuccess = false,
+                    Message = "You don't have a Booked Appointment",
+                    Data = null
+                };
+                return response;
+            }
+            else
+            {
+                var response = new ResponseApi
+                {
+                    IsSuccess = true,
+                    Message = "Success",
+                    Data = appointments
+                };
+                return response;
+            }
         }
 
         #endregion Public 
@@ -374,6 +400,17 @@ namespace Clinic_Core.Managers.Services
             string serverFolder = Path.Combine(_host.WebRootPath, folder);
             ImgeFile.CopyTo(new FileStream(serverFolder, FileMode.Create));
             return ImageURL;
+        }
+
+        private JWT Binding()
+        {
+            return new JWT
+            {
+                Audience = _configuration["JWTOken:Audience"],
+                Issuer = _configuration["JWTOken:Issuer"],
+                Key = _configuration["JWTOken:Key"],
+                DurationInDays = int.TryParse(_configuration["JWTOken:DurationInDays"], out var result) ? result : 0
+            };
         }
         #endregion private
     }

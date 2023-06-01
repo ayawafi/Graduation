@@ -12,7 +12,7 @@ namespace Clinic_Core.Managers.Interfaces
     {
         ResponseApi CreateBlog(string DoctorId, BlogModelView blogVM);
         ResponseApi GetAllBlogs();
-         ResponseApi GetBlogById(int blogId);
+        ResponseApi GetBlogById(int blogId);
         ResponseApi EditBlog(string doctorId,BlogModelView currentblog,int blogId);
         ResponseApi DeleteBlog(string doctorId,int blogId);
         ResponseApi GetBlogBySpecificNum(int num);
