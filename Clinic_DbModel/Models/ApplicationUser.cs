@@ -28,6 +28,7 @@ namespace Clinic_DbModel.Models
         public DateTime? DateOfBirth { get; set; }
         public string Gender { get; set; }
         public string BloodGroup { get; set; }
+        public int ConfirmationCode { get; set; }
         public virtual ICollection<Appointment> Appointments { get; set; }
         public virtual ICollection<Review> Reviews { get; set; }
 

@@ -18,7 +18,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.IO;
-using System.Numerics;
+using MimeKit;
+using System.Net.Mail;
 
 namespace Clinic_Core.Managers.Services
 {
@@ -31,8 +32,13 @@ namespace Clinic_Core.Managers.Services
         private readonly JWT _jwt;
         private readonly IConfiguration _configuration;
         private IWebHostEnvironment _host;
+        private readonly EmailConfiguration _emailConfig;
 
-        public DoctorManager(clinic_dbContext dbContext, IMapper mapper, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IOptions<JWT> jwt, IConfiguration configuration, IWebHostEnvironment host)
+        public DoctorManager(clinic_dbContext dbContext, IMapper mapper,
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager, 
+            IOptions<JWT> jwt, IConfiguration configuration, 
+            IWebHostEnvironment host, IOptions<EmailConfiguration> emailConfig)
         {
             _dbContext = dbContext;
             _mapper = mapper;
@@ -42,6 +48,7 @@ namespace Clinic_Core.Managers.Services
             _configuration = configuration;
             _jwt = Binding();
             _host = host;
+            _emailConfig = emailConfig.Value;
 
         }
         private JWT Binding()
@@ -63,25 +70,28 @@ namespace Clinic_Core.Managers.Services
                 {
                     var response = new ResponseApi
                     {
-                        IsSuccess = true,
+                        IsSuccess = false,
                         Message = "Email already Exist !",
                         Data = null
                     };
                          return response;
             }
                 var hashedPassword = HashPassword(DoctorReg.Password);
-                var doctor = _dbContext.Users.Add(new ApplicationUser
+           
+            var doctor = _dbContext.Users.Add(new ApplicationUser
                 {
                     FirstName = DoctorReg.FirstName,
                     LastName = DoctorReg.LastName,
                     Email = DoctorReg.Email,
                     PasswordHash = hashedPassword,
-                    UserType ="Doctor"
+                    UserType ="Doctor",
+                    
 
-                }).Entity;
+                    
+            }).Entity;
 
                 _dbContext.SaveChanges();
-                var jwtSecurityToken = await CreateJwtToken(doctor);
+            var jwtSecurityToken = await CreateJwtToken(doctor);
                 var token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
                 var newDoc = _dbContext.Users.FirstOrDefault(x => x.Email == doctor.Email);
                 var response1 = new ResponseApi
@@ -101,6 +111,44 @@ namespace Clinic_Core.Managers.Services
                           return response1;
             
 
+        }
+
+        public async Task<ResponseApi>  SendEmailResetPassword(string email)
+        {
+            var user = _dbContext.Users.FirstOrDefault(x => x.Email.Equals(email, StringComparison.InvariantCultureIgnoreCase));
+            Random random = new Random();
+            
+            if (user == null)
+            {
+                var response = new ResponseApi
+                {
+                    IsSuccess = false,
+                    Message = "Invalid Email ",
+                    Data = null
+                };
+                return response;
+            }
+            else
+            {
+                int randomNumber = random.Next(1000, 10000);
+                user.ConfirmationCode = randomNumber;
+                _dbContext.SaveChanges();
+
+                var code = user.ConfirmationCode;
+                var name = user.FirstName + " " + user.LastName;
+               await SendEmailForResetPasswordAsync(code, name, user.Email);
+                var response = new ResponseApi
+                {
+                    IsSuccess = true,
+                    Message = "we have sent a message to your email",
+                    Data = new
+                    {
+                        Email = user.Email,
+                        Code = code
+                    }
+                };
+                return response;
+            }
         }
 
         public async Task<ResponseApi> SignIn(PatientLoginModelView DoctorLogin)
@@ -144,6 +192,88 @@ namespace Clinic_Core.Managers.Services
             return response;
 
             }
+        }
+      public  ResponseApi ResetPassword(string email, ResetPasswordVM resetPasswordVM)
+        {
+            var user = _dbContext.Users.FirstOrDefault(x => x.Email == email);
+            if (user == null)
+            {
+                var response = new ResponseApi
+                {
+                    IsSuccess = false,
+                    Message = "Invalid Email",
+                    Data = null
+                };
+                return response;
+            }
+            else
+            {
+                if (resetPasswordVM == null || resetPasswordVM.NewPassword != resetPasswordVM.ConfirmNewPassword)
+                {
+
+                    var response = new ResponseApi
+                    {
+                        IsSuccess = false,
+                        Message = "The new password and confirmation of the new password don't match ",
+                        Data = null
+                    };
+
+                    return response;
+                }
+                else
+                {
+                    user.PasswordHash = HashPassword(resetPasswordVM.NewPassword);
+                    _dbContext.SaveChanges();
+                    var response = new ResponseApi
+                    {
+                        IsSuccess = true,
+                        Message = " The Password Reset Successfully",
+                        Data = null
+                    };
+
+                    return response;
+
+                }
+
+            }
+
+        }
+
+        public ResponseApi ConfirmationCode(int confirmationCode ,string email )
+        {
+            var user = _dbContext.Users
+                           .FirstOrDefault(a => a.ConfirmationCode
+                                                    .Equals(confirmationCode)
+                                                    && a.Email ==email);
+            if(user == null)
+            {
+                var response = new ResponseApi
+                {
+                    IsSuccess = false,
+                    Message = " Invalid Confirmation Code ",
+                    Data = null
+
+
+                };
+                return response;
+            }
+            else {
+                user.EmailConfirmed = true;
+                user.ConfirmationCode = 0;
+                _dbContext.SaveChanges();
+                var response = new ResponseApi
+                {
+                    IsSuccess = true,
+                    Message = "Confirmation Successfully,Now you can Reset your password",
+                    Data = email
+
+
+                };
+                return response;
+            }
+                      
+
+          
         }
 
         public ResponseApi GetTopDoctors()
@@ -587,6 +717,51 @@ namespace Clinic_Core.Managers.Services
             string serverFolder = Path.Combine(_host.WebRootPath, folder);
             ImgeFile.CopyTo(new FileStream(serverFolder, FileMode.Create));
             return ImageURL;
+        }
+
+
+        private async System.Threading.Tasks.Task SendEmailForResetPasswordAsync(int code, string name, string email)
+        {
+            try
+            {
+                MimeMessage emailMessage = new MimeMessage();
+                //now do the HTML formatting
+                MailboxAddress emailFrom = new MailboxAddress(_emailConfig.SmtpServer, _emailConfig.From);
+                emailMessage.From.Add(emailFrom);
+                var message = new MailMessage();
+                MailboxAddress emailTo = new MailboxAddress("Customer", email);
+                emailMessage.To.Add(emailTo);
+                BodyBuilder emailBodyBuilder = new BodyBuilder();
+                emailBodyBuilder.HtmlBody = $"<div width = \"100% !important\" style=\"background:#fff; width:100%!important; margin:0; padding:0; font-family:'Roboto',Helvetica,sans-serif; color:rgb(70,72,74,.9); font-size:15px; line-height:1.5em\">" +
+                       "<table align = \"center\" bgcolor=\"#e1f1fd\" border=\"0\" cellpadding=\"35\" cellspacing=\"0\" width=\"90%\" style=\"margin:0px auto; max-width:800px; display:table\">" +
+                       "<tbody><tr><td align = \"left\" style=\"border-collapse:collapse; text-align:left; font-family:'Muli',Helvetica,sans-serif; font-size:32px; font-weight:900; color:#1B5379; padding-top:20px; letter-spacing:-1px; line-height:1em\">" +
+                       "<img data-imagetype=\"External\" src=\"\" width=\"200\" style=\"width:200px\">" +
+                       "<br aria-hidden=\"true\"><br aria-hidden=\"true\"><br aria-hidden=\"true\">" +
+                       "<span style = \"width:80%; display:block; margin-bottom:40px\">" +
+                       "</br>Rest Your Account Password .</br></span> </td></tr></tbody></table>" +
+                       "<table align = \"center\" bgcolor= \"#ffffff\" border= \"0\" cellpadding= \"35\" cellspacing= \"0\" width= \"90%\" style= \"margin:0px auto; max-width:800px; display:table\" >" +
+                       $"<tbody><tr><td align= \"left\" style= \"border-collapse:collapse; text-align:left\" > Hi" +
+                       $"<br>" +
+$"<br>" +
+                       $"Please follow the link to reset your account password : {code}. <br><br>Thanks,<br> The Health Care Team<br></td></tr></tbody></table>" +
+                       "<table align=\"center\" bgcolor=\"#3599e8\" border=\"0\" cellpadding=\"35\" cellspacing=\"0\" width=\"90%\" style=\"margin:0px auto; text-align:center; max-width:800px; color:rgba(255,255,255,.5); font-size:11px; display:table\">" +
+                       "<tbody>" +
+                       "<tr width=\"100%\"><td width=\"100%\" style=\"border - collapse:collapse\"><img data-imagetype=\"External\" src=\"\" alt=\"Health\" width=\"25\" style=\"width:25px; opacity:.5\">" +
+                       "<br aria-hidden=\"true\"><span style=\"color:#fff; color:rgba(255,255,255,.5)\">Thank you for your cooperation</span> | " +
+                       "<a href=\"\" target=\"_blank\" rel=\"noopener noreferrer\" data-auth=\"NotApplicable\" style=\"text-decoration:none; color:#fff; color:rgba(255,255,255,.5)\" data-linkindex=\"1\">Unsubscripted</a> </td></tr></tbody>";
+                emailMessage.Body = emailBodyBuilder.ToMessageBody();
+                MailKit.Net.Smtp.SmtpClient emailClient = new MailKit.Net.Smtp.SmtpClient();
+                await emailClient.ConnectAsync(_emailConfig.SmtpServer, _emailConfig.Port, true);
+                emailClient.Authenticate(_emailConfig.From, _emailConfig.Password);
+                await emailClient.SendAsync(emailMessage);
+                emailClient.Disconnect(true);
+                emailClient.Dispose();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+
+            }
         }
         #endregion private
     }

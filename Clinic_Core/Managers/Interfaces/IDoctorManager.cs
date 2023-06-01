@@ -21,6 +21,9 @@ namespace clinic_Core.Managers.Interfaces
         ResponseApi GetMyPatientAppointment(string userId);
         ResponseApi GetMyPatient(string userId);
         ResponseApi ChangePassword(string userId, ChangePasswordViewModel changePasswordVM);
+        ResponseApi ResetPassword(string email, ResetPasswordVM resetPasswordVM);
+        ResponseApi ConfirmationCode(int confirmationCode, string email);
+        Task<ResponseApi> SendEmailResetPassword(string email);
 
     }
 }

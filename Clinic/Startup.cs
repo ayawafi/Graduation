@@ -6,6 +6,7 @@ using Clinic_Core.Managers.Interfaces;
 using Clinic_Core.Managers.Services;
 using Clinic_Core.Mapper;
 using Clinic_DbModel.Models;
+using Clinic_ModelView;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -82,6 +83,7 @@ namespace Clinic
             services.AddScoped<IScheduletimingManager, ScheduletimingManager>();
             services.AddScoped<IBlogManager, BlogManager>();
             services.AddScoped<ISocialMediaUrlManager, SocialMediaUrlManager>();
+            services.Configure<EmailConfiguration>(Configuration.GetSection("EmailConfiguration"));
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Clinic", Version = "v1" });

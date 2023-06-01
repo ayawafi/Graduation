@@ -1,9 +1,11 @@
 ﻿using clinic_Core.Managers.Interfaces;
 using Clinic_DbModel.Models;
 using Clinic_ModelView;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -18,10 +20,13 @@ namespace Clinic.Controllers
         private IDoctorManager _doctorManager;
         private readonly IHttpContextAccessor __httpContextAccessor;
 
+
         public DoctorController(IDoctorManager doctorManager, IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
             _doctorManager = doctorManager;
             __httpContextAccessor = httpContextAccessor;
+           
+            
 
         }
         [AllowAnonymous]
@@ -43,6 +48,8 @@ namespace Clinic.Controllers
             return Ok(res);
         }
 
+   
+
         [Route("api/doctor/changepassword")]
         [HttpPut]
         public IActionResult ChangePassword([FromForm] ChangePasswordViewModel changePasswordVM)
@@ -51,6 +58,33 @@ namespace Clinic.Controllers
             return Ok(result);
         }
 
+        [AllowAnonymous]
+        [Route("api/doctor/SendEmailResetPassword")]
+        [HttpPut]
+        public async Task<IActionResult> SendEmailResetPassword([FromForm]string email)
+        {
+            var result =await _doctorManager.SendEmailResetPassword(email);
+            return Ok(result);
+        }
+        [AllowAnonymous]
+        [Route("api/doctor/ConfirmationCode")]
+        [HttpPost]
+        public IActionResult ConfirmationCode([FromForm] int confirmationCode,string email)
+        {
+            var result = _doctorManager.ConfirmationCode(confirmationCode, email);
+            return Ok(result);
+        }
+
+        [AllowAnonymous]
+        [Route("api/doctor/ResetPassword")]
+        [HttpPost]
+        public IActionResult ResetPassword(string email, [FromForm] ResetPasswordVM resetPasswordVM)
+        {
+            var result = _doctorManager.ResetPassword(email, resetPasswordVM);
+            return Ok(result);
+        }
+
+        
         [Route("api/doctor/GetAllPatients")]
         [HttpGet]
         public IActionResult GetAllPatients()

@@ -3,6 +3,7 @@ using System;
 using Clinic_DbModel.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Clinic_DbModel.Migrations
 {
     [DbContext(typeof(clinic_dbContext))]
-    partial class clinic_dbContextModelSnapshot : ModelSnapshot
+    [Migration("20230601085650_add_confirm")]
+    partial class add_confirm
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -39,8 +41,8 @@ namespace Clinic_DbModel.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .HasColumnType("longtext");
 
-                    b.Property<int>("ConfirmationCode")
-                        .HasColumnType("int");
+                    b.Property<string>("ConfirmationLink")
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Country")
                         .HasColumnType("longtext");
