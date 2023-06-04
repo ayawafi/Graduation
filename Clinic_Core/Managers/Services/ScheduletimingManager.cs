@@ -43,6 +43,7 @@ namespace Clinic_Core.Managers.Services
                 {
                     DoctorId = uId.Id,
                     Day = scheduletiming.Day,
+                    Date = scheduletiming.Date,
                     StartTime = scheduletiming.StartTime,
                     EndTime = scheduletiming.EndTime,
                     DurationTime = scheduletiming.DurationTime,
@@ -99,11 +100,11 @@ namespace Clinic_Core.Managers.Services
             
         }
       
-        public ResponseApi GetScheduletimingsForDoctor(int doctorId,string day )
+        public ResponseApi GetScheduletimingsForDoctor(int doctorId, DateTime date )
         {
             var uId = _dbContext.Doctors.FirstOrDefault(x => x.Id == doctorId);
             var workHours = _dbContext.Scheduletimings.Where(z => z.DoctorId == uId.Id)
-            .FirstOrDefault(x => x.Day == day); 
+            .FirstOrDefault(x => x.Date == date); 
             if (workHours == null)
             {
                 var response = new ResponseApi
@@ -119,10 +120,10 @@ namespace Clinic_Core.Managers.Services
                 DateTime startTime = workHours.StartTime;
                 DateTime finishTime = workHours.EndTime;
                 TimeSpan durationTime = TimeSpan.FromMinutes(workHours.DurationTime);
-                DateTime date =  workHours.StartTime.Date;
+                DateTime dateTi =  workHours.StartTime.Date;
                 var dId = workHours.DoctorId;
 
-                List<(string TimeOfAppointment, int IsBooked)> timeIntervals = GenerateTimeIntervals(startTime, finishTime, durationTime, date, dId);
+                List<(string TimeOfAppointment, int IsBooked)> timeIntervals = GenerateTimeIntervals(startTime, finishTime, durationTime, dateTi, dId);
 
                 var response = new ResponseApi
                 {

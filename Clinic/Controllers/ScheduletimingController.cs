@@ -55,9 +55,9 @@ namespace Clinic.Controllers
         }
         [Route("api/scheduletiming/getScheduletimingsForDoctor")]
         [HttpGet]
-        public IActionResult GetScheduletimingsForDoctor(string day, int doctorId)
+        public IActionResult GetScheduletimingsForDoctor(DateTime date, int doctorId)
         {
-            var result = _scheduletimingManager.GetScheduletimingsForDoctor(doctorId,day);
+            var result = _scheduletimingManager.GetScheduletimingsForDoctor(doctorId, date);
             return Ok(result);
         }
     }

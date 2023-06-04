@@ -1,4 +1,5 @@
 ﻿using Clinic_ModelView;
+using System;
 using System.Collections.Generic;
 
 namespace Clinic_Core.Managers.Interfaces
@@ -7,7 +8,7 @@ namespace Clinic_Core.Managers.Interfaces
     {
         ResponseApi AddScheduletiming(string DoctorId, ScheduletimingModelView scheduletiming);
         ResponseApi GetBusinessHoursForDoctor(int DoctorId);
-        ResponseApi GetScheduletimingsForDoctor(int doctorId, string day);
+        ResponseApi GetScheduletimingsForDoctor(int doctorId, DateTime date);
 
     }
 }

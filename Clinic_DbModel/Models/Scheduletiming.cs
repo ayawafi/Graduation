@@ -12,6 +12,7 @@ namespace Clinic_DbModel.Models
         public int DoctorId { get; set; }
         public int DurationTime { get; set; }
         public string Day { get; set; }
+        public DateTime Date { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public bool Status { get; set; }
