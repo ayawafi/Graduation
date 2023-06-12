@@ -303,6 +303,48 @@ namespace Clinic_Core.Managers.Services
             }
         }
 
+        public ResponseApi ViewDoctorProfileOverViewById(int DoctorId)
+        {
+
+            var doctor = _dbContext.Doctors.Where(d => d.Id == DoctorId).Select(x => new
+            {
+                AboutMe = x.AboutMe,
+                Degree = x.Degree,
+                College = x.College,
+                YearOfCompletion = x.YearOfCompletion,
+                HospitalName = x.HospitalName,
+                HospitalFrom = x.HospitalFrom,
+                HospitalTo = x.HospitalTo,
+                Awards = x.Awards,
+                AwardsYear = x.AwardsYear,
+                DoctorServices = x.DoctorServices
+
+            });
+            if (doctor == null )
+            {
+                var response = new ResponseApi
+                {
+                    IsSuccess = false,
+                    Message = "There is no doctor with the selected id",
+                    Data = null
+                };
+                return response;
+            }
+            else
+            {
+             
+                var response = new ResponseApi
+                {
+                    IsSuccess = true,
+                    Message = "Success",
+                    Data = doctor
+
+                };
+                return response;
+            }
+        }
+
+       
         #endregion Public 
 
         #region private

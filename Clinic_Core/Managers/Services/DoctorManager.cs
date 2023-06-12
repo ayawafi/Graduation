@@ -172,7 +172,7 @@ namespace Clinic_Core.Managers.Services
             var jwtSecurityToken = await CreateJwtToken(doctor);
             var result = _mapper.Map<LoginDoctorResponse>(doctor);
             result.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
-
+               
             var response = new ResponseApi
             {
                 IsSuccess = true,
@@ -180,14 +180,15 @@ namespace Clinic_Core.Managers.Services
                 Data = new
                 {
                     Id = doctor.Id,
-                    DoctorName = doctor.FirstName+" "+doctor.LastName,
+                    FullName = doctor.FirstName+" "+doctor.LastName,
                     Email = doctor.Email,
                     Image = doctor.Image,
                     UserType = doctor.UserType,
                     Token = result.Token,
-                    IsValid = true
+                    IsValid = true,
+                    DoctorId = _dbContext.Doctors.Where(c => c.UserId == doctor.Id).Select(x => x.Id)?.FirstOrDefault()??0
 
-                }
+            }
             };
             return response;
 
@@ -498,6 +499,29 @@ namespace Clinic_Core.Managers.Services
            
         }
 
+        public ResponseApi Search(string clinicAddress, string clinicName)
+        {
+            var result = _dbContext.Doctors
+            .Where(d => d.ClinicAddress == clinicAddress || d.ClinicName == clinicName)
+            .Join(_dbContext.Users, d => d.UserId, au => au.Id, (d, au) => new { Doctor = d, ApplicationUser = au })
+            .Select(x => new
+            {
+                DoctorImage = x.ApplicationUser.Image,
+                DoctorName = x.ApplicationUser.FirstName + " " + x.ApplicationUser.LastName,
+                SpecialityName = x.Doctor.Specialty.SpecialtyName,
+                IdDoctor = x.Doctor.Id,
+                Degree = x.Doctor.Degree
+            }).ToList();
+
+            var response = new ResponseApi
+            {
+                IsSuccess = true,
+                Message = "Success",
+                Data = result
+            };
+            return response;
+
+        }
         public ResponseApi GetMyPatientAppointment(string userId)
         {
             var doctor = _dbContext.Doctors.FirstOrDefault(d => d.UserId == userId);
@@ -615,6 +639,57 @@ namespace Clinic_Core.Managers.Services
             }
 
 
+        }
+        public ResponseApi GetDoctorProfileById(int DoctorId)
+        {
+            var doctor = _dbContext.Doctors.Where(d => d.Id == DoctorId).Select(x => new
+            {
+                FullName = x.ApplicationUser.FirstName + " " + x.ApplicationUser.LastName,
+                Email = x.ApplicationUser.Email,
+                DoctorImage = x.ApplicationUser.Image,
+                Gender = x.ApplicationUser.Gender,
+                AboutMe = x.AboutMe,
+                Degree = x.Degree,
+                College = x.College,
+                YearOfCompletion = x.YearOfCompletion,
+                HospitalName = x.HospitalName,
+                HospitalFrom = x.HospitalFrom,
+                HospitalTo = x.HospitalTo,
+                Designation = x.Designation,
+                Awards = x.Awards,
+                AwardsYear = x.AwardsYear,
+                Registration = x.Registration,
+                DoctorServices = x.DoctorServices,
+                Pricing = x.Pricing,
+                SpecialtyName = x.Specialty.SpecialtyName,
+                ClinicName = x.ClinicName,
+                ClinicAddress = x.ClinicAddress,
+                Membership = x.Membership
+
+
+            });
+            if (doctor == null)
+            {
+                var response = new ResponseApi
+                {
+                    IsSuccess = false,
+                    Message = "There is no doctor with the selected id",
+                    Data = null
+                };
+                return response;
+            }
+            else
+            {
+
+                var response = new ResponseApi
+                {
+                    IsSuccess = true,
+                    Message = "Success",
+                    Data = doctor
+
+                };
+                return response;
+            }
         }
         #endregion Public 
 

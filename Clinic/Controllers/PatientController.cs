@@ -79,5 +79,15 @@ namespace Clinic.Controllers
             return Ok(res);
         }
 
+        [Authorize]
+        [Route("api/Patient/ViewDoctorProfileOverViewById")]
+        [HttpGet]
+        public IActionResult ViewDoctorProfileOverViewById(int doctorId)
+        {
+            var res = _patientManager.ViewDoctorProfileOverViewById(doctorId);
+            return Ok(res);
+        }
+
+       
     }
 }

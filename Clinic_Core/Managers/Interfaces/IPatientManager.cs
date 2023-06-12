@@ -17,5 +17,7 @@ namespace Clinic_Core.Managers.Interfaces
         ResponseApi GetFavouritesDoctor(string userId);
         ResponseApi DeleteFavouriteDoctor(string userId, int doctorId);
         ResponseApi GetMyAppointment(string userId);
+        ResponseApi ViewDoctorProfileOverViewById(int DoctorId);
+        
     }
 }

@@ -42,11 +42,13 @@ namespace Clinic
             services.AddDbContext<clinic_dbContext>(op =>
                 op.UseMySQL(Configuration.GetConnectionString("Default"))
                 );
+          
             services.AddOptions();
             services.Configure<JWT>(Configuration.GetSection("JWTOken"));
             services.AddIdentity<ApplicationUser, IdentityRole>()
              .AddDefaultTokenProviders()
              .AddEntityFrameworkStores<clinic_dbContext>();
+            services.AddSignalR();
 
             services.AddAuthentication(options =>
             {
@@ -83,6 +85,7 @@ namespace Clinic
             services.AddScoped<IScheduletimingManager, ScheduletimingManager>();
             services.AddScoped<IBlogManager, BlogManager>();
             services.AddScoped<ISocialMediaUrlManager, SocialMediaUrlManager>();
+            services.AddScoped<IAdminManager, AdminManager>();
             services.Configure<EmailConfiguration>(Configuration.GetSection("EmailConfiguration"));
             services.AddSwaggerGen(c =>
             {
@@ -134,6 +137,7 @@ namespace Clinic
             {
                 endpoints.MapDefaultControllerRoute();
                 endpoints.MapControllers();
+                endpoints.MapHub<ChatHub>("/chatHub");
             });
         }
     }

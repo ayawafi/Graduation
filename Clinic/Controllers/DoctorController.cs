@@ -133,7 +133,15 @@ namespace Clinic.Controllers
             return Ok(result);
         }
 
-        
+        [Route("api/doctor/Search")]
+        [HttpGet]
+        public IActionResult SearchByClinicNameOrAddress(string clinicAddress, string clinicName)
+        {
+            var result = _doctorManager.Search(clinicAddress, clinicName);
+            return Ok(result);
+        }
+
+
         [Route("api/doctor/GetMyPatientAppointment")]
         [HttpGet]
         public IActionResult GetMyPatientAppointment()
@@ -149,7 +157,14 @@ namespace Clinic.Controllers
             var result = _doctorManager.GetMyPatient(_DoctorId);
             return Ok(result);
         }
-        
 
+        [Authorize]
+        [Route("api/doctor/GetDoctorProfileById")]
+        [HttpGet]
+        public IActionResult GetDoctorProfileById(int doctorId)
+        {
+            var res = _doctorManager.GetDoctorProfileById(doctorId);
+            return Ok(res);
+        }
     }
 }

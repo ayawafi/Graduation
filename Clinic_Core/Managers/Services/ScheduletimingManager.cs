@@ -39,7 +39,7 @@ namespace Clinic_Core.Managers.Services
             }
             else
             {
-                var newScheduletiming = new ScheduletimingModelView
+                var newScheduletiming = new Scheduletiming
                 {
                     DoctorId = uId.Id,
                     Day = scheduletiming.Day,
@@ -56,7 +56,16 @@ namespace Clinic_Core.Managers.Services
                 {
                     IsSuccess = true,
                     Message = "Success",
-                    Data = newScheduletiming
+                    Data = new
+                    {
+                        DoctorId = uId.Id,
+                        Day = scheduletiming.Day,
+                        Date = scheduletiming.Date,
+                        StartTime = scheduletiming.StartTime,
+                        EndTime = scheduletiming.EndTime,
+                        DurationTime = scheduletiming.DurationTime
+
+                    }
                 };
                 return response;
             }
@@ -95,9 +104,6 @@ namespace Clinic_Core.Managers.Services
                 };
                 return response;
             }
-
-            
-            
         }
       
         public ResponseApi GetScheduletimingsForDoctor(int doctorId, DateTime date )
