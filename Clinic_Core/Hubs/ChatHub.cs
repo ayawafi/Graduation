@@ -1,4 +1,5 @@
 ﻿using Clinic_DbModel.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -17,20 +18,11 @@ public class ChatHub : Hub
     {
         string senderUserId = Context.UserIdentifier;
 
-        // Broadcast the message to the receiver
         await Clients.User(receiverUserId).SendAsync("ReceiveMessage", senderUserId, message);
     }
 
-    //public async Task GetMessages(string userId)
-    //{
-    //    var listofmsg= _dbContext.ChatMessages.SelectMany(x => new[] { x.SenderUserId, x.ReceiverUserId })
-    //.Where(id => id != userId)
-    //.Distinct()
-    //.ToList();
-    //    return listofmsg;
-    //    //var sendMessages = _dbContext.ChatMessages.Include("Doctor.User").Where(x => x.SenderUserId == userId).OrderBy(x => x.SentAt).ToList();
-    //    //var receivedMessages = _dbContext.ChatMessages.Where(x => x.ReceiverUserId == userId).OrderBy(x => x.SentAt).ToList();
-    //}
+
+
 }
 
 

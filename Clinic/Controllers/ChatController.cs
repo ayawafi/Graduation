@@ -44,26 +44,13 @@ namespace Clinic.Controllers
 
             await _chatHub.Clients.User(messageVM.ReceiverUserId).SendAsync("ReceiveMessage", chatMessage);
 
+            await _chatHub.Clients.User(messageVM.ReceiverUserId).SendAsync("ReceiveNotification", "You have a new massage");
+
 
             return Ok(res);
         }
 
-        //[HttpGet("chat/Getlistchat")]
-        //public IActionResult GetListChat()
-        //{
-
-        //    var listofmsg = _dbContext.ChatMessages.AsEnumerable()
-        //                        .SelectMany(x => new[] { x.SenderUserId, x.ReceiverUserId })
-        //                        .Where(id => id != _DoctorId)
-        //                        .Select(x=> new
-        //                        {
-        //                            userId=x.
-        //                        })
-        //                        .Distinct()
-        //                        .ToList();
-
-        //    return Ok(listofmsg);
-        //}
+    
 
         [HttpGet("chat/GetListChat")]
         public IActionResult GetListChat()
