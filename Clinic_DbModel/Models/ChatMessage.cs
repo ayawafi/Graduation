@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace Clinic_DbModel.Models
 {
-    //public class ChatMessage
-    //{
-    //    public int Id { get; set; }
-    //    public string SenderUserId { get; set; }
-    //    public ApplicationUser SenderUser { get; set; }
-    //    public string ReceiverUserId { get; set; }
-    //    public ApplicationUser ReceiverUser { get; set; }
-    //    public string Message { get; set; }
-    //    public DateTime SentAt { get; set; }
+    public class ChatMessage
+    {
+        public int Id { get; set; }
+        public string SenderUserId { get; set; }
+        public ApplicationUser SenderUser { get; set; }
+        public string ReceiverUserId { get; set; }
+        public ApplicationUser ReceiverUser { get; set; }
+        public string Message { get; set; }
+        public DateTime SentAt { get; set; }
 
-        
-    //}
+
+    }
 }

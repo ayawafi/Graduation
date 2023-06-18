@@ -6,6 +6,7 @@ using Clinic_ModelView;
 using MySqlX.XDevAPI.Common;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 
@@ -150,8 +151,8 @@ namespace Clinic_Core.Managers.Services
 
             for (DateTime current = start; current.Add(timeDuration) <= finish; current = current.Add(timeDuration))
             {
-                string timeInterval = current.ToString("h:mm tt") + " - " + current.Add(timeDuration).ToString("h:mm tt");
-
+               // string timeInterval = current.ToString("h:mm tt") + " - " + current.Add(timeDuration).ToString("h:mm tt");
+                string timeInterval = current.ToString("HH:mm", CultureInfo.InvariantCulture) + " - " + current.Add(timeDuration).ToString("HH:mm", CultureInfo.InvariantCulture);
                 bool isBooked = _dbContext.Appointments.Any(c => c.StartTime == current && c.EndTime == current.Add(timeDuration));
                 int bookingStatus = isBooked ? 1 : 0;
 
