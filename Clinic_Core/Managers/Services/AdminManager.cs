@@ -40,6 +40,7 @@ namespace Clinic_Core.Managers.Services
             var result = _dbContext.Doctors.Select(x => new
             { 
                 Name = x.ApplicationUser.FirstName +" "+ x.ApplicationUser.LastName,
+                DoctorImage = x.ApplicationUser.Image,
                 Specialty = x.Specialty.SpecialtyName
             }).ToList();
             var response = new ResponseApi

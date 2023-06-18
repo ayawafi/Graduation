@@ -207,10 +207,11 @@ namespace Clinic_Core.Managers.Services
             var result = _dbContext.FavDoctors.Where(x => x.ApplicationUserId == userId).Select(z => new
             {
                 DoctorId = z.DoctorId,
-                DoctorName = z.ApplicationUser.FirstName + " " + z.ApplicationUser.LastName,
-                DoctorImage = z.ApplicationUser.Image,
+                DoctorName = z.Dcotor.ApplicationUser.FirstName + " " + z.Dcotor.ApplicationUser.LastName,
+                DoctorImage = z.Dcotor.ApplicationUser.Image,
                 DoctorSpecialty = z.Dcotor.Specialty.SpecialtyName
             }).ToList();
+
             if (result.Any())
             {
                 var response = new ResponseApi
@@ -233,7 +234,6 @@ namespace Clinic_Core.Managers.Services
             }
             
         }
-
 
         public ResponseApi DeleteFavouriteDoctor(string userId, int doctorId)
         {
@@ -267,7 +267,7 @@ namespace Clinic_Core.Managers.Services
 
         public ResponseApi GetMyAppointment(string userId)
         {
-            var appointments = _dbContext.Appointments.Where(x => x.UserId == userId)
+            var appointments = _dbContext.Appointments.Where(x => x.UserId == userId && x.IsDeleted == false)
                                         .Select(x => new
                                         {
                                             AppointmentId = x.Id,

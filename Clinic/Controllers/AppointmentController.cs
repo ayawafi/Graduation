@@ -1,13 +1,10 @@
-﻿using clinic_Core.Managers.Interfaces;
-using Clinic_Core.Managers.Interfaces;
+﻿using Clinic_Core.Managers.Interfaces;
 using Clinic_DbModel.Models;
 using Clinic_ModelView;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System;
-using Clinic_Core.Managers.Services;
 
 namespace Clinic.Controllers
 {
@@ -48,6 +45,22 @@ namespace Clinic.Controllers
         public IActionResult BookedAppointments(int doctorId,DateTime date)
         {
             var result = _appointmentManager.BookedAppointments(doctorId, date);
+            return Ok(result);
+        }
+
+        [Route("api/appoitment/UpdateMyAppointment")]
+        [HttpPut]
+        public IActionResult UpdateMyAppointment(int appointmetId,[FromForm] AppointmentModelView appointment)
+        {
+            var result = _appointmentManager.UpdateMyAppointment(appointmetId, appointment);
+            return Ok(result);
+        }
+
+        [Route("api/appoitment/DeleteMyAppointment")]
+        [HttpPut]
+        public IActionResult DeleteMyAppointment(int appointmentId)
+        {
+            var result = _appointmentManager.DeleteMyAppointment(appointmentId);
             return Ok(result);
         }
     }

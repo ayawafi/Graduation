@@ -70,6 +70,69 @@ namespace Clinic_Core.Managers
            
         }
 
+        public ResponseApi UpdateMyAppointment(int appointmetId, AppointmentModelView appointment)
+        {
+            var myAppoitment = _dbContext.Appointments.FirstOrDefault(z => z.Id == appointmetId);
+
+            if(myAppoitment == null)
+            {
+                var response = new ResponseApi
+                {
+                    IsSuccess = false,
+                    Message = "There is no appointment with this Id",
+                    Data = null
+                };
+                return response;
+            }
+            else {
+                myAppoitment.Day = appointment.Day;
+                myAppoitment.Date = appointment.Date;
+                myAppoitment.StartTime = appointment.StartTime;
+                myAppoitment.EndTime = appointment.EndTime;
+
+                _dbContext.SaveChanges();
+                var newAppointment = _dbContext.Appointments.FirstOrDefault(z => z.Id == appointmetId);
+                var response = new ResponseApi
+                {
+                    IsSuccess = true,
+                    Message = "Successfully Updated",
+                    Data = newAppointment
+                };
+
+                return response;
+            }
+           
+        }
+
+        public ResponseApi DeleteMyAppointment(int appointmentId)
+        {
+            var appId = _dbContext.Appointments.FirstOrDefault(v => v.Id == appointmentId);
+
+            if(appId == null)
+            {
+                var response = new ResponseApi
+                {
+                    IsSuccess = false,
+                    Message = "There is no appointment with this Id",
+                    Data = null
+                };
+                return response;
+            }
+            else
+            {
+                appId.IsDeleted = true;
+                _dbContext.SaveChanges();
+                var response = new ResponseApi
+                {
+                    IsSuccess = true,
+                    Message = "Appointment is deleted Successfully",
+                    Data = null
+                };
+                return response;
+            }
+
+        }
+
 
     }
 }

@@ -502,7 +502,7 @@ namespace Clinic_Core.Managers.Services
         public ResponseApi Search(string clinicAddress, string clinicName)
         {
             var result = _dbContext.Doctors
-            .Where(d => d.ClinicAddress == clinicAddress || d.ClinicName == clinicName)
+            .Where(d => d.ClinicAddress.Contains(clinicAddress) || d.ClinicName.Contains(clinicName) )
             .Join(_dbContext.Users, d => d.UserId, au => au.Id, (d, au) => new { Doctor = d, ApplicationUser = au })
             .Select(x => new
             {
@@ -525,7 +525,7 @@ namespace Clinic_Core.Managers.Services
         public ResponseApi GetMyPatientAppointment(string userId)
         {
             var doctor = _dbContext.Doctors.FirstOrDefault(d => d.UserId == userId);
-            var appointments = _dbContext.Appointments.Where(d => d.DoctorId == doctor.Id).OrderBy(b => b.Date)
+            var appointments = _dbContext.Appointments.Where(d => d.DoctorId == doctor.Id && d.IsDeleted == false).OrderBy(b => b.Date)
                 .Select(x => new
                 {
                     PatientName = x.ApplicationUser.FirstName + " " + x.ApplicationUser.LastName,

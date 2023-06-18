@@ -28,7 +28,7 @@ namespace Clinic_DbModel.Models
         public virtual DbSet<Socialmediaurl> Socialmediaurls { get; set; }
         public virtual DbSet<Specialization> Specializations { get; set; }
         public virtual DbSet<FavDoctors> FavDoctors { get; set; }
-        public virtual DbSet<ChatMessage> ChatMessages { get; set; }
+       // public virtual DbSet<ChatMessage> ChatMessages { get; set; }
 
 
 

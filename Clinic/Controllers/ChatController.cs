@@ -9,10 +9,11 @@ using Clinic_ModelView;
 using Microsoft.AspNetCore.Authorization;
 using MimeKit;
 using MySqlX.XDevAPI;
+using System.Linq;
 
 namespace Clinic.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [ApiController]
     public class ChatController : BaseController
     {
@@ -27,25 +28,55 @@ namespace Clinic.Controllers
 
         }
 
-        [HttpPost("chat/sendmessage")]
-        public async Task<IActionResult> SendMessage([FromBody] ChatMessageVM messageVM)
-        {
-            var chatMessage = new ChatMessage
-            {
-                SenderUserId = _DoctorId,
-                ReceiverUserId = messageVM.ReceiverUserId,
-                Message = messageVM.Message,
-                SentAt = DateTime.UtcNow
-            };
+        //[HttpPost("chat/sendmessage")]
+        //public async Task<IActionResult> SendMessage([FromBody] ChatMessageVM messageVM)
+        //{
+        //    var chatMessage = new ChatMessage
+        //    {
+        //        SenderUserId = _DoctorId,
+        //        ReceiverUserId = messageVM.ReceiverUserId,
+        //        Message = messageVM.Message,
+        //        SentAt = DateTime.UtcNow
+        //    };
 
-            _dbContext.ChatMessages.Add(chatMessage);
-            await _dbContext.SaveChangesAsync();
+        //    _dbContext.ChatMessages.Add(chatMessage);
+        //   var res=  _dbContext.SaveChanges();
 
-            await _chatHub.Clients.User(messageVM.ReceiverUserId).SendAsync("ReceiveMessage", chatMessage);
+        //    await _chatHub.Clients.User(messageVM.ReceiverUserId).SendAsync("ReceiveMessage", chatMessage);
 
 
-            return Ok();
-        }
+        //    return Ok(res);
+        //}
+
+        //[HttpGet("chat/Getlistchat")]
+        //public async Task<IActionResult> GetListChat()
+        //{
+
+
+        //    var res = _dbContext.ChatMessages.Where(x => x.SenderUserId == _DoctorId || x.ReceiverUserId == _DoctorId).ToList();
+           
+
+            
+
+
+        //    return Ok(res);
+        //}
+
+        //[HttpGet("chat/getlistmessage")]
+        //public async Task<IActionResult> GetListMessage()
+        //{
+
+
+        //    var res = _dbContext.ChatMessages.Where(x => x.SenderUserId == _DoctorId || x.ReceiverUserId == _DoctorId).
+
+
+
+
+
+
+        //    return Ok(res);
+        //}
+
 
     }
 }

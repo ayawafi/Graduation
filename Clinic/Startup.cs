@@ -86,6 +86,7 @@ namespace Clinic
             services.AddScoped<IBlogManager, BlogManager>();
             services.AddScoped<ISocialMediaUrlManager, SocialMediaUrlManager>();
             services.AddScoped<IAdminManager, AdminManager>();
+            services.AddScoped<IReviewManager, ReviewManager>();
             services.Configure<EmailConfiguration>(Configuration.GetSection("EmailConfiguration"));
             services.AddSwaggerGen(c =>
             {

@@ -93,7 +93,7 @@ namespace Clinic.Controllers
             return Ok(result);
 
         }
-        
+        [AllowAnonymous]
         [Route("api/doctor/GetTopDoctors")]
         [HttpGet]
         public IActionResult GetTopDoctors()
@@ -101,7 +101,7 @@ namespace Clinic.Controllers
             var result = _doctorManager.GetTopDoctors();
             return Ok(result);
         }
-
+        [AllowAnonymous]
         [Route("api/doctor/GetTopDoctorsBySpecificNumber")]
         [HttpGet]
         public IActionResult GetTopDoctorsBySpecificNumber(int Number)
@@ -124,8 +124,8 @@ namespace Clinic.Controllers
             var result = _doctorManager.UpdateDoctorProfile(_DoctorId, doctor);
             return Ok(result);
         }
-        
-        [Route("api/doctor/SearchDoctors")]
+        [AllowAnonymous]
+        [Route("api/doctor/SearchDoctorsByGender&Specialty")]
         [HttpGet]
         public IActionResult SearchDoctors(string gender, int Specialty)
         {
@@ -133,7 +133,7 @@ namespace Clinic.Controllers
             return Ok(result);
         }
 
-        [Route("api/doctor/Search")]
+        [Route("api/doctor/SearchByClinicNameOrAddress")]
         [HttpGet]
         public IActionResult SearchByClinicNameOrAddress(string clinicAddress, string clinicName)
         {

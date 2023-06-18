@@ -8,7 +8,6 @@ namespace Clinic_ModelView
 {
     public class ReviewModelView
     {
-        public int Id { get; set; }
-        public int PatientId { get; set; }
+        public string Comment { get; set; }
     }
 }

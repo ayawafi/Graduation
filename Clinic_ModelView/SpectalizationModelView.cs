@@ -10,7 +10,6 @@ namespace Clinic_ModelView
 {
     public class SpectalizationModelView
     {
-        public int? Id { get; set; }
         public string SpecialtyName { get; set; }
         public IFormFile ImageFile { get; set; }
         public string Image { get; set; }

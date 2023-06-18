@@ -25,6 +25,7 @@ namespace Clinic.Controllers
             var result = _blogManager.CreateBlog(_DoctorId,blogVM);
             return Ok(result);
         }
+        [AllowAnonymous]
         [Route("api/blog/getallblogs")]
         [HttpGet]
         public IActionResult GetAllBlogs()
@@ -42,7 +43,7 @@ namespace Clinic.Controllers
             return Ok(result);
 
         }
-
+        [AllowAnonymous]
         [Route("api/blog/getblogbyspecificnum")]
         [HttpGet]
         public IActionResult GetBlogBySpecificNum(int num)

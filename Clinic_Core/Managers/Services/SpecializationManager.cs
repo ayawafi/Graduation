@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 
 
 namespace Clinic_Core.Managers.Services
@@ -30,7 +31,7 @@ namespace Clinic_Core.Managers.Services
         }
         public ResponseApi GetAllSpecialties()
         {
-            var result = _dbContext.Specializations.Select(x => new
+            var result = _dbContext.Specializations.Where(z => z.IsDelete == false).Select(x => new
             {
                 Id = x.Id,
                 SpecialtyName = x.SpecialtyName,
@@ -48,7 +49,7 @@ namespace Clinic_Core.Managers.Services
 
         public ResponseApi GetSpecialtiesBySpecificNum(int NumberOfSpecialties)
         {
-            var result = _dbContext.Specializations.Select(x => new
+            var result = _dbContext.Specializations.Where(z => z.IsDelete == false).Select(x => new
             {
                 Id = x.Id,
                 SpecialtyName = x.SpecialtyName,
@@ -65,8 +66,20 @@ namespace Clinic_Core.Managers.Services
             
         }
 
-        public ResponseApi CreateSpecialty(SpectalizationModelView specialtyMV)
+        public ResponseApi CreateSpecialty(string adminId,SpectalizationModelView specialtyMV)
         {
+            var admId = _dbContext.Users.FirstOrDefault(c => c.Id == adminId);
+
+            if (admId.UserType != "Admin")
+            {
+                var response = new ResponseApi
+                {
+                    IsSuccess = false,
+                    Message = "You don't have a permission to delete",
+                    Data = null
+                };
+                return response;
+            }
             if (_dbContext.Specializations
                           .Any(a => a.SpecialtyName.Equals(specialtyMV.SpecialtyName,
                                     StringComparison.InvariantCultureIgnoreCase)))
@@ -104,10 +117,22 @@ namespace Clinic_Core.Managers.Services
             return response1;
         }
 
-        public ResponseApi UpdateSpecialty(SpectalizationModelView currentSpecialty)
+        public ResponseApi UpdateSpecialty(string adminId,Specialization currentSpecialty, int specialtyId)
         {
+            var admId = _dbContext.Users.FirstOrDefault(c => c.Id == adminId);
+
+            if (admId.UserType != "Admin")
+            {
+                var response = new ResponseApi
+                {
+                    IsSuccess = false,
+                    Message = "You don't have a permission to delete",
+                    Data = null
+                };
+                return response;
+            }
             var specialty = _dbContext.Specializations
-                        .FirstOrDefault(a => a.Id == currentSpecialty.Id);
+                        .FirstOrDefault(a => a.Id == specialtyId);
 
             if (specialty == null)
             {
@@ -135,17 +160,27 @@ namespace Clinic_Core.Managers.Services
             return response;
             }
         }
-        public ResponseApi DeleteSpecialty(SpectalizationModelView currentSpecialty)
+        public ResponseApi DeleteSpecialty(string adminId,int SpecialtyId)
         {
-            var specialty = _dbContext.Specializations
-                        .FirstOrDefault(a => a.Id == currentSpecialty.Id)
-                        ?? throw new ServiceValidationException("specialty not exist");
+            var admId = _dbContext.Users.FirstOrDefault(c => c.Id == adminId);
+
+            if(admId.UserType != "Admin")
+            {
+                var response = new ResponseApi
+                {
+                    IsSuccess = false,
+                    Message = "You don't have a permission to delete",
+                    Data = null
+                };
+                return response;
+            }
+            var specialty = _dbContext.Specializations.FirstOrDefault(a => a.Id == SpecialtyId);
 
             if(specialty == null)
             {
                 var response = new ResponseApi
                 {
-                    IsSuccess = true,
+                    IsSuccess = false,
                     Message = "specialty not found",
                     Data = null
                 };
