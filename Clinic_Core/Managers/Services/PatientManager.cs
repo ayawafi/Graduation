@@ -70,6 +70,7 @@ namespace Clinic_Core.Managers.Services
                 LastName = PatientReg.LastName,
                 Email = PatientReg.Email,
                 PasswordHash = hashedPassword,
+                ConfirmPassword = PatientReg.ConfirmPassword,
                 UserType = "Patient"
             }).Entity;
 

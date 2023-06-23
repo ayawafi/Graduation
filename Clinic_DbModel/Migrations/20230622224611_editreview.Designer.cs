@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Clinic_DbModel.Migrations
 {
     [DbContext(typeof(clinic_dbContext))]
-    [Migration("20230618073736_editreview_table")]
-    partial class editreview_table
+    [Migration("20230622224611_editreview")]
+    partial class editreview
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -39,6 +39,9 @@ namespace Clinic_DbModel.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("ConcurrencyStamp")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ConfirmPassword")
                         .HasColumnType("longtext");
 
                     b.Property<int>("ConfirmationCode")
@@ -330,7 +333,7 @@ namespace Clinic_DbModel.Migrations
                     b.Property<string>("Comment")
                         .HasColumnType("longtext");
 
-                    b.Property<DateTime>("CreatedDate")
+                    b.Property<DateTime>("Created")
                         .HasColumnType("datetime(6)");
 
                     b.Property<int>("DoctorId")

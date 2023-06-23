@@ -27,7 +27,7 @@ namespace Clinic.Controllers
             return Ok(result);
         }
 
-        [Route("api/review/GetAllReviewsForDoctor")]
+        [Route("api/review/AddReviewsForDoctor")]
         [HttpPost]
         public IActionResult AddReview( int doctorId, [FromForm]ReviewModelView reviewVM)
         {

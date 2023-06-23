@@ -84,6 +84,7 @@ namespace Clinic_Core.Managers.Services
                     LastName = DoctorReg.LastName,
                     Email = DoctorReg.Email,
                     PasswordHash = hashedPassword,
+                    ConfirmPassword = DoctorReg.ConfirmPassword,
                     UserType ="Doctor",
                     
 
@@ -644,6 +645,7 @@ namespace Clinic_Core.Managers.Services
         {
             var doctor = _dbContext.Doctors.Where(d => d.Id == DoctorId).Select(x => new
             {
+                userId = x.UserId,
                 FullName = x.ApplicationUser.FirstName + " " + x.ApplicationUser.LastName,
                 Email = x.ApplicationUser.Email,
                 DoctorImage = x.ApplicationUser.Image,

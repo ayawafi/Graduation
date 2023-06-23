@@ -34,6 +34,10 @@ namespace Clinic_DbModel.Models
 
         public string UserType { get; set; }
 
+        [DataType(DataType.Password)]
+        [Compare("Password")]
+        public string ConfirmPassword { get; set; }
+
 
     }
 }

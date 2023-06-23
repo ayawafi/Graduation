@@ -43,7 +43,7 @@ namespace Clinic_Core.Managers.Services
                     UserId = userId,
                     DoctorId = doctorId,
                     Comment = reviewVM.Comment,
-                    CreatedDate = DateTime.Now
+                    Created = DateTime.Now,
                 };
 
                 _dbContext.Reviews.Add(review);
@@ -83,7 +83,7 @@ namespace Clinic_Core.Managers.Services
                                                    PatientName = x.ApplicationUser.FirstName + " " + x.ApplicationUser.LastName,
                                                    PatientImage = x.ApplicationUser.Image,
                                                    Review = x.Comment,
-                                                   CreatdDate = x.CreatedDate.ToString("yyyy MM dd")
+                                                   Created = x.Created.ToString("yyyy MM dd")
                                                }).ToList();
                 if (!review.Any())
                 {

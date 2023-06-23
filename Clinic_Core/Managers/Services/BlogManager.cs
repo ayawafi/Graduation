@@ -62,6 +62,7 @@ namespace Clinic_Core.Managers
             var result = _dbContext.Blogs
                             .Select(x => new
                             {
+                                Id = x.Id,
                                 name = x.Doctor.ApplicationUser.FirstName+" "+ x.Doctor.ApplicationUser.LastName,
                                 Title = x.Title,
                                 Content = x.Content,
@@ -98,6 +99,7 @@ namespace Clinic_Core.Managers
             var result = _dbContext.Blogs
                             .Select(x => new
                             {
+                                Id = x.Id,
                                 name = x.Doctor.ApplicationUser.FirstName + " " + x.Doctor.ApplicationUser.LastName,
                                 Title = x.Title,
                                 Content = x.Content,
@@ -130,7 +132,17 @@ namespace Clinic_Core.Managers
         }
         public ResponseApi GetBlogById(int blogId)
         {
-            var blog = _dbContext.Blogs.FirstOrDefault(x => x.Id == blogId);
+            var blog = _dbContext.Blogs.Where(x => x.Id == blogId).Select(x => new
+            {
+                Id = x.Id,
+                name = x.Doctor.ApplicationUser.FirstName + " " + x.Doctor.ApplicationUser.LastName,
+                Title = x.Title,
+                Content = x.Content,
+                CreatedDate = x.CreatedDate,
+                BlogImage = x.Image,
+                DoctorImage = x.Doctor.ApplicationUser.Image
+            });
+            
             if(blog == null)
             {
                 var response = new ResponseApi
@@ -146,8 +158,9 @@ namespace Clinic_Core.Managers
                 var response = new ResponseApi
                 {
                     IsSuccess = false,
-                    Message = "Blog dosen't exist",
+                    Message = "Successfully",
                     Data = blog
+
                 };
                 return response;
             }

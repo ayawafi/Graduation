@@ -29,7 +29,7 @@ namespace Clinic.Controllers
         }
 
         [HttpPost("chat/sendmessage")]
-        public async Task<IActionResult> SendMessage([FromBody] ChatMessageVM messageVM)
+        public async Task<IActionResult> SendMessage([FromForm] ChatMessageVM messageVM)
         {
             var chatMessage = new ChatMessage
             {
@@ -108,49 +108,46 @@ namespace Clinic.Controllers
         public IActionResult GetChatMassage(string uId)
         {
             var chatMsg = _dbContext.ChatMessages
-    .Where(x => (x.SenderUserId == uId && x.ReceiverUserId == _DoctorId) ||
-                (x.SenderUserId == _DoctorId && x.ReceiverUserId == uId))
-    .Join(_dbContext.Users,
-        message => message.SenderUserId,
-        sender => sender.Id,
-        (message, sender) => new { Message = message, SenderName = sender.FirstName + " " + sender.LastName })
-    .Join(_dbContext.Users,
-        message => message.Message.ReceiverUserId,
-        receiver => receiver.Id,
-        (message, receiver) => new
-        {
-            message.Message.SenderUserId,
-            message.Message.ReceiverUserId,
-            SenderName = message.SenderName,
-            ReceiverName = receiver.FirstName + " " + receiver.LastName,
-            Message = message.Message.Message,
-            SentAt = message.Message.SentAt
-        })
-    .ToList()
-    .OrderBy(x => x.SentAt.ToString("h:mm:ss tt d/M/yyyy"))
-    .Select(x => new
-    {
-        x.SenderUserId,
-        x.ReceiverUserId,
-        x.SenderName,
-        x.ReceiverName,
-        x.Message,
-        SentAt = x.SentAt.ToString("h:mm:ss tt d/M/yyyy")
-    })
-    .ToList();
-
-
+                .Where(x => (x.SenderUserId == uId && x.ReceiverUserId == _DoctorId) ||
+                            (x.SenderUserId == _DoctorId && x.ReceiverUserId == uId))
+                .Join(_dbContext.Users,
+                    message => message.SenderUserId,
+                    sender => sender.Id,
+                    (message, sender) => new { Message = message, SenderName = sender.FirstName + " " + sender.LastName })
+                .Join(_dbContext.Users,
+                    message => message.Message.ReceiverUserId,
+                    receiver => receiver.Id,
+                    (message, receiver) => new
+                    {
+                        message.Message.SenderUserId,
+                        message.Message.ReceiverUserId,
+                        SenderName = message.SenderName,
+                        ReceiverName = receiver.FirstName + " " + receiver.LastName,
+                        Message = message.Message.Message,
+                        SentAt = message.Message.SentAt
+                    })
+                .OrderBy(x => x.SentAt)
+                .ToList()
+                .Select(x => new
+                {
+                    x.SenderUserId,
+                    x.ReceiverUserId,
+                    x.SenderName,
+                    x.ReceiverName,
+                    x.Message,
+                    SentAt = x.SentAt.ToString("h:mm:ss tt d/M/yyyy")
+                })
+                .ToList();
 
             if (!chatMsg.Any())
             {
                 var response = new ResponseApi
                 {
                     IsSuccess = false,
-                    Message = "You don't have any massage",
+                    Message = "You don't have any message",
                     Data = null
                 };
                 return Ok(response);
-                
             }
             else
             {
@@ -161,9 +158,69 @@ namespace Clinic.Controllers
                     Data = chatMsg
                 };
                 return Ok(response);
-               
             }
         }
+
+        //    [HttpGet("chat/GetChatMassage")]
+        //    public IActionResult GetChatMassage(string uId)
+        //    {
+        //        var chatMsg = _dbContext.ChatMessages
+        //.Where(x => (x.SenderUserId == uId && x.ReceiverUserId == _DoctorId) ||
+        //            (x.SenderUserId == _DoctorId && x.ReceiverUserId == uId))
+        //.Join(_dbContext.Users,
+        //    message => message.SenderUserId,
+        //    sender => sender.Id,
+        //    (message, sender) => new { Message = message, SenderName = sender.FirstName + " " + sender.LastName })
+        //.Join(_dbContext.Users,
+        //    message => message.Message.ReceiverUserId,
+        //    receiver => receiver.Id,
+        //    (message, receiver) => new
+        //    {
+        //        message.Message.SenderUserId,
+        //        message.Message.ReceiverUserId,
+        //        SenderName = message.SenderName,
+        //        ReceiverName = receiver.FirstName + " " + receiver.LastName,
+        //        Message = message.Message.Message,
+        //        SentAt = message.Message.SentAt
+        //    })
+        //.ToList()
+        //.OrderBy(x => x.SentAt.ToString("h:mm:ss tt d/M/yyyy"))
+        //.Select(x => new
+        //{
+        //    x.SenderUserId,
+        //    x.ReceiverUserId,
+        //    x.SenderName,
+        //    x.ReceiverName,
+        //    x.Message,
+        //    SentAt = x.SentAt.ToString("h:mm:ss tt d/M/yyyy")
+        //})
+        //.ToList();
+
+
+
+        //        if (!chatMsg.Any())
+        //        {
+        //            var response = new ResponseApi
+        //            {
+        //                IsSuccess = false,
+        //                Message = "You don't have any massage",
+        //                Data = null
+        //            };
+        //            return Ok(response);
+
+        //        }
+        //        else
+        //        {
+        //            var response = new ResponseApi
+        //            {
+        //                IsSuccess = true,
+        //                Message = "Successfully",
+        //                Data = chatMsg
+        //            };
+        //            return Ok(response);
+
+        //        }
+        //    }
 
     }
 }
