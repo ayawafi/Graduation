@@ -26,6 +26,7 @@ namespace clinic_Core.Managers.Interfaces
         ResponseApi ConfirmationCode(int confirmationCode, string email);
         Task<ResponseApi> SendEmailResetPassword(string email);
         ResponseApi GetDoctorProfileById(int DoctorId);
+        ResponseApi GetMyBlog(string userId);
 
     }
 }

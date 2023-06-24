@@ -693,6 +693,43 @@ namespace Clinic_Core.Managers.Services
                 return response;
             }
         }
+
+        public ResponseApi GetMyBlog(string userId)
+        {
+            var doctor = _dbContext.Doctors.FirstOrDefault(d => d.UserId == userId);
+            var blogs = _dbContext.Blogs.Where(d => d.DoctorId == doctor.Id)
+                .Select(x => new
+                {
+                    Id = x.Id,
+                    name = x.Doctor.ApplicationUser.FirstName + " " + x.Doctor.ApplicationUser.LastName,
+                    Title = x.Title,
+                    Content = x.Content,
+                    CreatedDate = x.CreatedDate,
+                    BlogImage = x.Image,
+                    DoctorImage = x.Doctor.ApplicationUser.Image
+                }).ToList();
+
+            if (!blogs.Any())
+            {
+                var response = new ResponseApi
+                {
+                    IsSuccess = false,
+                    Message = "You don't have any blog",
+                    Data = null
+                };
+                return response;
+            }
+            else
+            {
+                var response = new ResponseApi
+                {
+                    IsSuccess = true,
+                    Message = "Success",
+                    Data = blogs
+                };
+                return response;
+            }
+        }
         #endregion Public 
 
 

@@ -166,5 +166,14 @@ namespace Clinic.Controllers
             var res = _doctorManager.GetDoctorProfileById(doctorId);
             return Ok(res);
         }
+
+        [Authorize]
+        [Route("api/doctor/GetMyBlog")]
+        [HttpGet]
+        public IActionResult GetMyBlog()
+        {
+            var res = _doctorManager.GetMyBlog(_DoctorId);
+            return Ok(res);
+        }
     }
 }
